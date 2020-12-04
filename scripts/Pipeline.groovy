@@ -81,6 +81,7 @@ def initConf(fpPackageName) {
 }
 
 def preCheck(paramMap) {
+    echo "===> start preCheck()"
     Precheck.validateHost(paramMap, Conf.NE[0], CCTF)
     Precheck.checkCCTF(CCTF)
     echo 'Use the following parameters to SyVe:'

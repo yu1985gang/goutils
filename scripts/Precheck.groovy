@@ -172,7 +172,7 @@ def checkCCTF(CCTF){
     def healthCheckResult = Utils.shCmd(cctfHealthCheckApi,"Check CCTF status")
     def healthCheckResultJson = Utils.parseJson(healthCheckResult)
     if (healthCheckResultJson.status != "Normal operation" ){
-            error("CCTF Health check status: ${healthCheckResultJson.status}")
+            error("CCTF Health check failed with status: ${healthCheckResultJson.status}")
     }
     echo "CCTF healthCheck:${healthCheckResultJson.status}"
 }
