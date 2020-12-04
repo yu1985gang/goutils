@@ -168,8 +168,8 @@ def getNeTypeReleaseFromPackageProperties(String packageLink) {
 }
 
 def checkCCTF(CCTF){
-    echo "start to check CCTF health status"
-    def baseUrl = "https://${CCTF.FQDN}/cctf/api"
+    echo "===>start to check CCTF health status"
+    def baseUrl = "https://${CCTF.FQDN}/cctf/api123"
     def cctfHealthCheckApi = "curl -sk ${baseUrl}/system/healthCheck --connect-timeout 10 -m 30 --retry 3 --retry-delay 5"
     def healthCheckResult = Utils.shCmd(cctfHealthCheckApi,"Check CCTF status")
     try{
