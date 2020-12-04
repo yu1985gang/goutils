@@ -167,14 +167,6 @@ def getNeTypeReleaseFromPackageProperties(String packageLink) {
     return [neType, neRelease]
 }
 
-def pingAddress(String address,int account = 3){
-        def rc = sh script:"ping -c ${account} ${address}", returnStatus:true,label:"Ping address"
-        if(rc != 0){
-            error("ping ${address} timeout, please check")
-        }
-}
-
-
 def checkCCTF(CCTF){
 
     if(!CCTF.FQDN || CCTF.FQDN.trim() == ""){

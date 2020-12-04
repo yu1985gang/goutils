@@ -126,7 +126,6 @@ pipeline {
                     PIPELINE.validateAndGenPlan(paramMap, CUSTOM_INTEGRATION_PARAMS, FP_PACKAGE_LINK)
                     
                     PIPELINE.preCheck(paramMap)
-                    PIPELINE.healthCheck(NE_HOST)
                     
                     NOM = PIPELINE.getNOMConf()
                     CCTF = PIPELINE.getCCTFConf()

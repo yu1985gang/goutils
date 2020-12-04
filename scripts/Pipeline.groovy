@@ -82,7 +82,7 @@ def initConf(fpPackageName) {
 
 def preCheck(paramMap) {
     Precheck.validateHost(paramMap, Conf.NE[0], CCTF)
-    
+    Precheck.checkCCTF(CCTF)
     echo 'Use the following parameters to SyVe:'
     echo "NOM.NOM_USER_NAME: ${NOM.NOM_USER_NAME}"
     echo "NOM.NOM_BASE_DOMAIN: ${NOM.NOM_BASE_DOMAIN}"
@@ -108,20 +108,5 @@ def postAlways() {
     Deploy.deleteClient(CLIENT_ID, NOM)
 }
 
-def healthCheck(NE_HOST){
-    def neHost = Conf.NE[0].FQDN
-    if (NE_HOST) {
-        neHost = NE_HOST
-    }
-    def addressMap = ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "NE_HOST": neHost]
-    addressMap.each { k, v ->
-        if (v != null && "${v}".trim() != "") {
-            Precheck.pingAddress(v)
-        } else {
-            error("Invalid conf, ${k}=${v}")
-        }
-    }
-    Precheck.checkCCTF(CCTF)
-}
 
 return this
