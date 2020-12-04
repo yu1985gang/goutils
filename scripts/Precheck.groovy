@@ -173,8 +173,12 @@ def checkCCTF(CCTF){
     def baseUrl = "https://${CCTF.FQDN}/cctf/api"
     def cctfHealthCheckApi = "curl -sk ${baseUrl}/system/healthCheck --connect-timeout 10 -m 30 --retry 3 --retry-delay 5"
     def healthCheckResult = Utils.shCmd(cctfHealthCheckApi,"Check CCTF status")
-    def rt = Utils.parseJson(healthCheckResult)
-    echo "rt is $rt"
+    def healthCheckResultJson = Utils.parseJson(healthCheckResult)
+    echo "healthCheckResultJson is $healthCheckResultJson"
+    if (healthCheckResultJson.status != "Normal operation" ){
+            error("CCTF Health check status: ${healthCheckResultJson.status}")
+    }  
+    
     echo "===>start to check CCTF health status done"
 }
 
