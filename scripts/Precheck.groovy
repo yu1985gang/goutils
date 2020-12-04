@@ -167,9 +167,9 @@ def getNeTypeReleaseFromPackageProperties(String packageLink) {
     return [neType, neRelease]
 }
 
-def checkCCTF(CCTF){
+def checkCCTF2(CCTF){
     echo "===>start to check CCTF health status"
-    def baseUrl = "https://${CCTF.FQDN}/cctf/api123"
+    def baseUrl = "https://${CCTF.FQDN}/cctf/api"
     def cctfHealthCheckApi = "curl -sk ${baseUrl}/system/healthCheck --connect-timeout 10 -m 30 --retry 3 --retry-delay 5"
     def healthCheckResult = Utils.shCmd(cctfHealthCheckApi,"Check CCTF status")
     try{
@@ -180,6 +180,16 @@ def checkCCTF(CCTF){
     }catch (Exception e){
         error("CCTF health check failed")
     }
+    echo "===>start to check CCTF health status done"
+}
+
+def checkCCTF(CCTF){
+    echo "===>start to check CCTF health status"
+    def baseUrl = "https://${CCTF.FQDN}/cctf/api"
+    def cctfHealthCheckApi = "curl -sk ${baseUrl}/system/healthCheck --connect-timeout 10 -m 30 --retry 3 --retry-delay 5"
+    def healthCheckResult = Utils.shCmd(cctfHealthCheckApi,"Check CCTF status")
+    def rt = Utils.parseJson(healthCheckResult)
+    echo "rt is $rt"
     echo "===>start to check CCTF health status done"
 }
 
