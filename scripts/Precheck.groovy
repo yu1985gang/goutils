@@ -1,5 +1,4 @@
 import groovy.transform.Field
-import groovy.json.JsonSlurper
 
 @Field private Utils = null
 
@@ -167,21 +166,7 @@ def getNeTypeReleaseFromPackageProperties(String packageLink) {
     return [neType, neRelease]
 }
 
-def checkCCTF2(CCTF){
-    echo "===>start to check CCTF health status"
-    def baseUrl = "https://${CCTF.FQDN}/cctf/api"
-    def cctfHealthCheckApi = "curl -sk ${baseUrl}/system/healthCheck --connect-timeout 10 -m 30 --retry 3 --retry-delay 5"
-    def healthCheckResult = Utils.shCmd(cctfHealthCheckApi,"Check CCTF status")
-    try{
-        def jsonResponse = new JsonSlurper().parseText(healthCheckResult)
-        if (jsonResponse.status != "Normal operation" ){
-            error("CCTF Health check status: ${jsonResponse.status}")
-        }  
-    }catch (Exception e){
-        error("CCTF health check failed")
-    }
-    echo "===>start to check CCTF health status done"
-}
+
 
 def checkCCTF(CCTF){
     echo "===>start to check CCTF health status"
