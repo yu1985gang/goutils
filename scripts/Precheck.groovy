@@ -168,11 +168,7 @@ def getNeTypeReleaseFromPackageProperties(String packageLink) {
 }
 
 def checkCCTF(CCTF){
-
-    if(!CCTF.FQDN || CCTF.FQDN.trim() == ""){
-        error("Invalid CCTF parameter, CCTF.FQDN=${CCTF.FQDN}")
-    }
-
+    echo "start to check CCTF health status"
     def baseUrl = "https://${CCTF.FQDN}/cctf/api"
     def cctfHealthCheckApi = "curl -sk ${baseUrl}/system/healthCheck --connect-timeout 10 -m 30 --retry 3 --retry-delay 5"
     def healthCheckResult = Utils.shCmd(cctfHealthCheckApi,"Check CCTF status")
@@ -183,7 +179,8 @@ def checkCCTF(CCTF){
         }  
     }catch (Exception e){
         error("CCTF health check failed")
-    } 
+    }
+    echo "===>start to check CCTF health status done"
 }
 
 //}
