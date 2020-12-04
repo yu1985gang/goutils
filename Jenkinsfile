@@ -133,8 +133,131 @@ pipeline {
                 }
             }
         }
+        stage('Download FP package'){
+            steps {
+                script {
+                    STAGE_NAME = "DOWNLOAD_FP_PACKAGE"
+                }
+
+                echo "Check FP package link"
+                script {
+                    if (!FP_PACKAGE_LINK) {
+                        error('FP package link is missing.')
+                    }
+                }
+
+                script {
+                    println "FP package name: ${FP_PACKAGE_NAME}"
+                    stageStarted(FP_PACKAGE_NAME, STAGE_NAME)
+                }
+
+                echo "Download FP package"
+                timeout(time:15, unit: 'MINUTES') {
+                    sh script:'curl -x "" ${FP_PACKAGE_LINK} -OJ'
+                }
+
+                echo "Set FP package picked label for NOM SyVe"
+                script {
+                    def props = 'name:nom_syve_picked|value:yes|mode:overwrite'
+                    stageSucceed(FP_PACKAGE_NAME, STAGE_NAME, props)
+                }
+            }
+        }
+        stage('Deploy FP package'){
+            steps {
+                script {
+                    PIPELINE.deployPackage()
+                }
+            }
+        }
+        stage('Integrate NE'){
+            steps {
+                script {
+                    PIPELINE.integrateNE()
+                }
+            }
+        }
+        stage('Test execution'){
+            steps {
+                echo "Test execution"
+                script {
+                    STAGE_NAME = "RUN_TEST_CASES"
+                    stageStarted(FP_PACKAGE_NAME, STAGE_NAME)
+                }
+                script {
+                    try{
+						common_tc_docker_image="neo-docker-releases.repo.lab.pl.alcatel-lucent.com/neo-sat-poc:latest"
+						TP_BASE_DOMAIN=NOM.NOM_BASE_DOMAIN
+						TP_NOM_OPEN_API_GW="apigw."+NOM.NOM_BASE_DOMAIN
+						TP_NOM_OPEN_API_USERNAME=NOM.NOM_USER_NAME
+						TP_NOM_OPEN_API_PASSWORD=NOM.NOM_PASSWORD
+						NE_NE_TYPE="REGSTR"
+						NE_PROTOCOL="NE3SWS"
+						NE_INTEGRATED_ID="REGSTR-3333"
+						NE_METADATA_FASTPASS_PACKAGE_LINK=FP_PACKAGE_LINK
+
+						test_product_name="product_" + FP_PACKAGE_NAME
+						echo test_product_name
+						test_report_path = JENKINS_HOME + "/jobs/" + JOB_NAME + "/builds/" + BUILD_NUMBER + "/test_report"
+						test_log_file_name = "test_log_" + System.currentTimeMillis() + ".zip"
+						echo test_report_path
+                        
+                        CCTF
+
+						sh """#!/bin/bash -x
+                        cd CCTF_API
+                        python -c "from test_with_cctf import CCTFProject,generate_test_parameters; \
+						test=CCTFProject('${CCTF.FQDN}', '${CCTF.USER_NAME}', '${CCTF.PASSWORD}', '${test_product_name}','DEBUG');\
+						test.create_lab('remote', '${COMMON_TC_PACKAGE_URL}','test_package_by_syve_pipe','${common_tc_docker_image}');\
+						test.update_package_parameters(generate_test_parameters('TP_BASE_DOMAIN=${TP_BASE_DOMAIN};TP_NOM_OPEN_API_GW=${TP_NOM_OPEN_API_GW};TP_NOM_OPEN_API_USERNAME=${TP_NOM_OPEN_API_USERNAME};TP_NOM_OPEN_API_PASSWORD=${TP_NOM_OPEN_API_PASSWORD};NE_NE_TYPE=${NE_NE_TYPE};NE_PROTOCOL=${NE_PROTOCOL};NE_INTEGRATED_ID=${NE_INTEGRATED_ID};NE_METADATA_FASTPASS_PACKAGE_LINK=${NE_METADATA_FASTPASS_PACKAGE_LINK}'));\
+						test.execute_tagged_testcases_in_project('ID_3003');\
+						test.get_execution_logs_by_jobid('${test_log_file_name}');\
+						test.delete_lab();\
+						test.delete_project()"
+
+						mkdir ${test_report_path}
+						cd ${test_report_path}
+						mv ${WORKSPACE}/CCTF_API/${test_log_file_name} ./
+						tar xzvf ${test_log_file_name}
+                        """
+
+                        stageSucceed(FP_PACKAGE_NAME, STAGE_NAME)
+                    }
+                    catch (Exception e) {
+                        error("Test execution failed. Exception: ${e}")
+                    }
+                    finally {
+                        publishTestResults()
+                    }
+                }
+            }
+        }
     }
 
+    post {
+        always {
+            echo "Post work"
+            script {
+                removeFpPackage(FP_PACKAGE_NAME)
+                PIPELINE.postAlways()
+            }
+        }
+        failure {
+            script {
+                scopeFailed(FP_PACKAGE_NAME, STAGE_NAME)
+            }
+        }
+        success {
+            script {
+                scopeSucceed(FP_PACKAGE_NAME, "nom_syve_pipe")
+            }
+        }
+        aborted {
+            script {
+                scopeAborted(FP_PACKAGE_NAME, "nom_syve_pipe")
+            }
+        }
+    }
 }
 
 def removeFpPackage(String packageName) {

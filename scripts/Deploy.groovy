@@ -37,7 +37,7 @@ def refreshAccessToken(client_secrete, client_id, NOM) {
 def deployPackage(fp_package_name, access_token, NOM) {
     def apiStr = String.format(API_Props['API_DEPLOY_PACKAGE'],
         NOM.NOM_BASE_DOMAIN, fp_package_name, access_token)
-    def importHttpCodeResponse = Utils.shCmd(Utils.aCurl() + "-X POST " + apiStr, "Import fast pass package")
+    def importHttpCodeResponse = Utils.shCmd(Utils.httpCurl() + "-X POST " + apiStr, "Import fast pass package")
 
     echo "import response: ${importHttpCodeResponse}"
     if (importHttpCodeResponse == "201" || importHttpCodeResponse == "400") {

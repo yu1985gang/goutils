@@ -82,7 +82,7 @@ def initConf(fpPackageName) {
 
 def preCheck(paramMap) {
     Precheck.validateHost(paramMap, Conf.NE[0], CCTF)
-    Precheck.checkCCTF(CCTF)
+    
     echo 'Use the following parameters to SyVe:'
     echo "NOM.NOM_USER_NAME: ${NOM.NOM_USER_NAME}"
     echo "NOM.NOM_BASE_DOMAIN: ${NOM.NOM_BASE_DOMAIN}"
@@ -107,6 +107,5 @@ def getCommonTCPackageUrl() {
 def postAlways() {
     Deploy.deleteClient(CLIENT_ID, NOM)
 }
-
 
 return this
