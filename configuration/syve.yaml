@@ -1,0 +1,17 @@
+NOM:
+  - NOM_USER_NAME: neonetics
+    NOM_PASSWORD: Nextgen#123
+    NOM_BASE_DOMAIN: neo0033.dyn.nesc.nokia.net
+    NOM_REALM_NAME: NEO
+CCTF:
+  FQDN: neo0033vip.netact.nsn-rdnet.net
+  USER_NAME: admin
+  PASSWORD: cctf@Pipe
+COMMON_TC_PACKAGE_URL: https://repo3.cci.nokia.net/artifactory/neo-generic-candidates/CCTF/neo-sat-poc-0.0.175.tgz
+COMMON_TC_DOCKER_IMAGE: neo-docker-releases.repo.lab.pl.alcatel-lucent.com/neo-sat-poc:latest
+FP_FEEDBACK_COLLECTOR:
+  FQDN: http://cidash.netact.nsn-rdnet.net/fastpass/job/Fast_Pass_Feedback_Collector
+  TOKEN: FPTOKEN
+GLOBAL_NOTIFICATION_MAIL_LIST:
+  - I_NSW_NM_CDSYSAPP_ART_NESI@internal.nsn.com
+FAST_PASS_ARTIFACTORY_BASE_URL: https://esisoj70.emea.nsn-net.net/artifactory
