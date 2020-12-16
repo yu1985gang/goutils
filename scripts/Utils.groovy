@@ -48,8 +48,8 @@ def isIPv6(String addr) {
 
 
 def readNodePem(string path){
-    def currentPath  = ${env.workspace}
-    Utils = load "${env.WORKSPACE}/scripts/Utils.groovy"
+    def nodePemFile  = ${env.workspace}/configuration/node.pem
+    
 }
 
 

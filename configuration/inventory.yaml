@@ -1,0 +1,24 @@
+---
+endpoints:
+  ncm:
+    host: "10.92.130.42"
+    ssh_username: "cloud-user"
+    ssh_key_file: "node.pem"
+    cmd: "sudo docker exec bcmt-admin ncm"
+  edge:
+    host: "10.92.130.124"
+    ssh_username: "cloud-user"
+    ssh_key_file: "node.pem"
+  internal_control:
+    host: "neo0033node02"
+    access_endpoint: "edge"
+configurations:
+  applications:
+    atlas_vars_file: "atlas-vars.yaml"
+    atlas_resources_path: "."
+  update_automation:
+    update_strategy: "nightly"
+contacts:
+  email:
+    - REMEMBER_TO_UPDATE@not_configured.com
+    - THIS_LIST@not_configured.com
