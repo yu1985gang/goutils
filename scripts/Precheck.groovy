@@ -129,7 +129,7 @@ def pingNE(String address){
     def sshUserName = LabInvertory.endpoints.ncm.ssh_username
     echo "host is $ncmHost"
     echo "sshUserName is $sshUserName"
-    echo "address is $address"
+    
     Utils.shCmd("chmod 400 ${NodePem}","Set node.pme read-only permission")
     def rc=""
     if (Utils.isIPv4(address)){
@@ -137,8 +137,11 @@ def pingNE(String address){
     }else{
         def routeInterface = sh script:"/sbin/route -n | grep '^0.0.0.0' | rev | cut -d' ' -f1 | rev", returnStdout:true
         echo "routeInterface is $routeInterface"
-        //rc = sh script: "ssh -i /var/node.pem ${sshUserName}@${ncmHost} ping6 -c3 -I ${routeInterface} ${address}", returnStatus:true
-        rc = sh script: "ssh -i ${env.WORKSPACE}/configuration/node.pem cloud-user@10.92.130.42 ping6 -c3 -I eth0 2a00:8a00:4000:020c:0000:0000:001c:001a",returnStatus:true
+        echo "address class is ${address.getClass()}"
+        assert "${address}" instanceof String
+        echo "address is $address"
+        rc = sh script: "ssh -i /var/node.pem ${sshUserName}@${ncmHost} ping6 -c3 -I ${routeInterface} ${address}", returnStatus:true
+        //rc = sh script: "ssh -i ${env.WORKSPACE}/configuration/node.pem cloud-user@10.92.130.42 ping6 -c3 -I eth0 2a00:8a00:4000:020c:0000:0000:001c:001a",returnStatus:true
     }
     if (rc != 0) {
         error("ping address ${address} timeout, please check")
