@@ -123,22 +123,31 @@ def pingAddress(String address, int account = 3) {
     }
 }
 
-def pingNE(String address, int account = 3) {
+
+
+
+
+
+
+
+
+def pingNE(String address){
     def ncmHost = LabInvertory.endpoints.ncm.host
     def sshUserName = LabInvertory.endpoints.ncm.ssh_username
     echo "host is $host"
     echo "sshUserName is $sshUserName"
-    def rc = ""
-    if(Utils.isIPv4(address)){
+    def rc=""
+    if (Utils.isIPv4(address)){
         rc = sh script: "sh -i NodePem sshUserName@ncmHost \"ping -c3 ${address}\"",returnStatus:true
     }else{
-        echo "interface is $interface"
         rc = sh script: "sh -i NodePem sshUserName@ncmHost \"ping -I eth0 -c3 ${address}\"", returnStatus:true
     }
     if (rc != 0) {
         error("ping address ${address} timeout, please check")
     }
+
 }
+
 
 def createParamOptionalMap(String customIntegrationParams) {
     def paramOptionalMap = [:]
