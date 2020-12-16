@@ -129,7 +129,7 @@ def pingNE(String address){
     def sshUserName = LabInvertory.endpoints.ncm.ssh_username
     echo "host is $ncmHost"
     echo "sshUserName is $sshUserName"
-    echi "address is $address"
+    echo "address is $address"
     def rc=""
     if (Utils.isIPv4(address)){
         rc = sh script: "sh -i ${NodePem} ${sshUserName}@${ncmHost} \"ping -c3 ${address}\"",returnStatus:true
