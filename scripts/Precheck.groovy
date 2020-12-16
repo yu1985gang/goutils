@@ -131,8 +131,8 @@ def pingNE(String address, int account = 3) {
     def rc = ""
     if(Utils.isIPv4(address)){
         rc = sh script: "sh -i NodePem sshUserName@ncmHost \"ping -c3 ${address}\"",returnStatus:true
-    } else (Utils.isIPv6(address)){
-        def interface = sh script: '/sbin/route -n | grep "^0.0.0.0" | rev | cut -d\' \' -f1 | rev', returnStdout:true
+    } else if (Utils.isIPv6(address)){
+        def interface = sh script:"/sbin/route -n | grep '^0.0.0.0' | rev | cut -d' ' -f1 | rev", returnStdout:true
         echo "interface is $interface"
         rc = sh script: "sh -i NodePem sshUserName@ncmHost \"ping -I ${interface} -c3 ${address}\"", returnStatus:true
     } else{
