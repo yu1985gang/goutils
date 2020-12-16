@@ -137,11 +137,12 @@ def pingNE(String address){
     }else{
         def routeInterface = sh script:"/sbin/route -n | grep '^0.0.0.0' | rev | cut -d' ' -f1 | rev", returnStdout:true
         echo "routeInterface is $routeInterface"
-        echo "address class is ${address.getClass()}"
-        assert address instanceof String
-        echo "address is ${address}"
-        echo "address is $address"
-        rc = sh script: "ssh -i ${env.WORKSPACE}/configuration/node.pem ${sshUserName}@${ncmHost} ping6 -c3 -I eth0 ${address}", returnStatus:true
+        echo "routeInterface class is ${routeInterface.getClass()}"
+        assert routeInterface instanceof String
+        echo "routeInterface is ${routeInterface}"
+        def intf = routeInterface.toString()
+        echo "intf is $intf"
+        rc = sh script: "ssh -i ${env.WORKSPACE}/configuration/node.pem ${sshUserName}@${ncmHost} ping6 -c3 -I ${intf} ${address}", returnStatus:true
         //rc = sh script: "ssh -i ${env.WORKSPACE}/configuration/node.pem cloud-user@10.92.130.42 ping6 -c3 -I eth0 2a00:8a00:4000:020c:0000:0000:001c:001a",returnStatus:true
     }
     if (rc != 0) {
