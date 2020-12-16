@@ -38,7 +38,7 @@ def preCheck(NE_SW_ID, NE_MO_CLASS_ID, NE_DIST_NAME, NE_HOST, NE_PORT, NE_USER_N
 
     (Conf, NOM, CCTF) = Precheck.getDefaultConf()
     
-    (INTEGRATION_PLAN_NAME, INTEGRATION_PLAN) = Precheck.validateAndGenPlan(NE, Precheck.createParamOptionalMap(CUSTOM_INTEGRATION_PARAMS), Conf, FP_PACKAGE_LINK)
+   
     Precheck.validateHost(NE, CCTF)
     Precheck.checkCCTF(CCTF)
     
