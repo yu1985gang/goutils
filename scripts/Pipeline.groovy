@@ -32,10 +32,6 @@ def preCheck(NE_SW_ID, NE_MO_CLASS_ID, NE_DIST_NAME, NE_HOST, NE_PORT, NE_USER_N
     CUR_STAGE_NAME = "PRE_CHECK"
 
     
-    FP_PACKAGE_LINK = Precheck.getFPLink(ne_sw_id)
-    echo "FP_PACKAGE_LINK: ${FP_PACKAGE_LINK}"
-    FP_PACKAGE_NAME = Precheck.getFPPackageName(FP_PACKAGE_LINK)
-    echo "FP_PACKAGE_NAME: ${FP_PACKAGE_NAME}"
 
     NE = ['class' : NE_MO_CLASS_ID, distName: NE_DIST_NAME, host: NE_HOST, port: NE_PORT,
             username: NE_USER_NAME, password: NE_PASSWORD]
