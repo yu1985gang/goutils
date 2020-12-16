@@ -132,10 +132,8 @@ def pingNE(String address, int account = 3) {
     if(Utils.isIPv4(address)){
         rc = sh script: "sh -i NodePem sshUserName@ncmHost \"ping -c3 ${address}\"",returnStatus:true
     }else{
-        def interface = "eth0"
-        //def interface = sh script:"/sbin/route -n | grep '^0.0.0.0' | rev | cut -d' ' -f1 | rev", returnStdout:true
         echo "interface is $interface"
-        rc = sh script: "sh -i NodePem sshUserName@ncmHost \"ping -I ${interface} -c3 ${address}\"", returnStatus:true
+        rc = sh script: "sh -i NodePem sshUserName@ncmHost \"ping -I eth0 -c3 ${address}\"", returnStatus:true
     }
     if (rc != 0) {
         error("ping address ${address} timeout, please check")
