@@ -124,8 +124,6 @@ def pingAddress(String address, int account = 3) {
 }
 
 
-
-
 def pingNE(String address){
     def ncmHost = LabInvertory.endpoints.ncm.host
     def sshUserName = LabInvertory.endpoints.ncm.ssh_username
@@ -133,11 +131,11 @@ def pingNE(String address){
     echo "sshUserName is $sshUserName"
     def rc=""
     if (Utils.isIPv4(address)){
-        rc = sh script: "sh -i ${NodePem} sshUserName@ncmHost \"ping -c3 ${address}\"",returnStatus:true
+        rc = sh script: "sh -i ${NodePem} ${sshUserName}@${ncmHost} \"ping -c3 ${address}\"",returnStatus:true
     }else{
-        def kk = "eth0"
-        echo "interfact is $kk"
-        rc = sh script: "sh -i ${NodePem} sshUserName@ncmHost \"ping -I eth0 -c3 ${address}\"", returnStatus:true
+        def routeInterface = sh script:"/sbin/route -n | grep '^0.0.0.0' | rev | cut -d' ' -f1 | rev", returnStdout:true
+        echo "routeInterface is $routeInterface"
+        rc = sh script: "sh -i ${NodePem} ${sshUserName}@${ncmHost} \"ping -I ${routeInterface} -c3 ${address}\"", returnStatus:true
     }
     if (rc != 0) {
         error("ping address ${address} timeout, please check")
