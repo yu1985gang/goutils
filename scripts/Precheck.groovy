@@ -137,9 +137,13 @@ def pingNE(String address){
     }else{
         def routeInterface = sh script:"/sbin/route -n | grep '^0.0.0.0' | rev | cut -d' ' -f1 | rev", returnStdout:true
         echo "routeInterface is $routeInterface"
-        def cmd = "ssh -i ${NodePem} ${sshUserName}@${ncmHost} \"ping -6 -c 3 -I ${routeInterface} ${address}\""
+        def cmd = "ssh -i ${NodePem} ${sshUserName}@${ncmHost} \"ping6 -c3 -I ${routeInterface} ${address}\""
         echo "cmd is $cmd"
-        rc = sh script: "${cmd}", returnStatus:true
+        sh """
+        cmd
+        echo $?
+        """
+        //rc = sh script: "${cmd}", returnStatus:true
     }
     if (rc != 0) {
         error("ping address ${address} timeout, please check")
