@@ -1,9 +1,0 @@
-.idea
-*.iml
-*.bak
-*.pyc
-**/*.zip
-target
-cloud.key
-!.gitlab-ci.yml.o
-out
