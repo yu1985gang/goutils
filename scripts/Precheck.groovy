@@ -139,8 +139,8 @@ def pingNE(String address){
         echo "routeInterface is $routeInterface"
         def cmd = "ssh -i ${NodePem} ${sshUserName}@${ncmHost} \"ping6 -c3 -I ${routeInterface} ${address}\""
         echo "cmd is $cmd"
-        sh """
-        cmd
+        sh """#!/bin/bash -x
+        ssh -i ${NodePem} ${sshUserName}@${ncmHost} \"ping6 -c3 -I ${routeInterface} ${address}\"
         echo $?
         """
         //rc = sh script: "${cmd}", returnStatus:true
