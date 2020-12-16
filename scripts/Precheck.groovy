@@ -5,11 +5,15 @@ import groovy.transform.Field
 @Field private Conf = null
 @Field private GET_LATEST_FP_PACKAGE = "%s/api/storage/netact-fast-pass-release-local/fast_pass_packages/%s?lastModified"
 
+@Field private LabInvertory = null
+@Field private NodePem = "${env.WORKSPACE}/configuration/node.pem"
+
 echo "Loaded class Precheck.groovy"
 
 Utils = load "${env.WORKSPACE}/scripts/Utils.groovy"
 //DnValidator = load "${env.WORKSPACE}/scripts/Validator.groovy"
 Conf = readYaml(file: "${env.WORKSPACE}/configuration/syve.yaml")
+LabInvertory = readYaml(file: "${env.WORKSPACE}/configuration/inventory.yaml")
 
 def validateParams(NE_SW_ID, NE_DIST_NAME, NE_HOST, NE_PORT, NE_USER_NAME, NE_PASSWORD) {
     if (!NE_SW_ID) {
@@ -88,7 +92,7 @@ def validateHost(NE, CCTF) {
         neHost = selectedNE.FQDN
         echo "Use the ne host from configuration: NE_HOST=${neHost}"
     }
-    def addressMap = ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "NE_HOST": neHost, "CCTF_FQDN": CCTF.FQDN]
+    def addressMap = ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "CCTF_FQDN": CCTF.FQDN]
     addressMap.each { k, v ->
         if (v != null && "${v}".trim() != "") {
             pingAddress(v)
@@ -97,18 +101,42 @@ def validateHost(NE, CCTF) {
             error("Invalid conf, ${k}=${v}")
         }
     }
+
+
+    def addressMap2 = ["NE_HOST": neHost]
+    addressMap.each { k, v ->
+        if (v != null && "${v}".trim() != "") {
+            pingNE(v)
+            echo "Ping ${k} successfully"
+        } else {
+            error("Invalid conf, ${k}=${v}")
+        }
+    }
 }
 
 def pingAddress(String address, int account = 3) {
-    def rc = null
-    if(Utils.isIPv4(address)){
-        rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping address"
-    }else if (Utils.isIPv6(address)){
-        def Interface = Utils.shCmd('/sbin/route -n | grep "^0.0.0.0" | rev | cut -d \' \' -f1 | rev', "Get IPV6 interface")
-        rc = sh script: "ping6 -I ${Interface} -c ${account} ${address}", returnStatus: true, label: "Ping ipv6 address"
-    }else{
-        rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping dns"
+    def rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping address"
+    if (rc != 0) {
+        error("ping address ${address} timeout, please check")
     }
+}
+
+def pingNE(String address, int account = 3) {
+    def ncmHost = LabInvertory.endpoints.ncm.host
+    def sshUserName = LabInvertory.endpoints.ncm.ssh_username
+    echo "host is $host"
+    echo "sshUserName is $sshUserName"
+    def rc = ""
+    if(Utils.isIPv4(address)){
+        rc = sh script: "sh -i NodePem sshUserName@ncmHost \"ping -c3 ${address}\"",returnStatus:true
+    } else (Utils.isIPv6(address)){
+        def interface = Utils.shCmd('/sbin/route -n | grep "^0.0.0.0" | rev | cut -d\' \' -f1 | rev')
+        echo "interface is $interface"
+        rc = sh script: "sh -i NodePem sshUserName@ncmHost \"ping -I ${interface} -c3 ${address}\"", returnStatus:true
+    } else{
+        rc = sh script: "sh -i NodePem sshUserName@ncmHost \"ping -c3 ${address}\"",returnStatus:true
+    }
+    
     if (rc != 0) {
         error("ping address ${address} timeout, please check")
     }

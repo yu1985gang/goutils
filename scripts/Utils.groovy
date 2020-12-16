@@ -47,9 +47,24 @@ def isIPv6(String addr) {
 }
 
 
-def readNodePem(string path){
-    def nodePemFile  = ${env.workspace}/configuration/node.pem
+def readNodePem(){
+    def pemFile  = "${env.WORKSPACE}/configuration/node.pem"
+    def invertoryFilePath  = "${env.WORKSPACE}/configuration/inventory.yaml"
+
+    def readInvertoryFile()
+    read
+
+
     
+}
+
+def yamlFile(string file){
+    def datas=""
+    if(file.endWith("yml") || file.endWith("yaml")){
+        datas = readYaml file : yaml_file
+    }else{
+
+    }
 }
 
 
