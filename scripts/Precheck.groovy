@@ -106,7 +106,7 @@ def validateHost(NE, CCTF) {
 
 
     def addressMap2 = ["NE_HOST": neHost]
-    addressMap.each { k, v ->
+    addressMap2.each { k, v ->
         if (v != null && "${v}".trim() != "") {
             pingNE(v)
             echo "Ping ${k} successfully"
