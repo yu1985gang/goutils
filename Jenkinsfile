@@ -74,57 +74,10 @@ This image is used for running test cases.''',
                 }
             }
         }
-        stage('DownloadFP FP package'){
-            steps {
-                script {
-                    PIPELINE.downloadFpPackage()
-                }
-            }
-        }
-        stage('Deploy FP package'){
-            steps {
-                script {
-                    PIPELINE.deployPackage()
-                }
-            }
-        }
-        stage('Integrate NE'){
-            steps {
-                script {
-                    PIPELINE.integrateNE()
-                }
-            }
-        }
-        stage('Run Test Case'){
-            steps {
-                script {
-                    PIPELINE.exeTestCase()
-                }
-            }
-        }
+
+
     }
 
-    post {
-        always {
-            script {
-                PIPELINE.postAlways()
-            }
-        }
-        failure {
-            script {
-                PIPELINE.scopeFailed()
-            }
-        }
-        success {
-            script {
-                PIPELINE.scopeSucceed()
-            }
-        }
-        aborted {
-            script {
-                PIPELINE.scopeAborted()
-            }
-        }
-    }
+
 }
 

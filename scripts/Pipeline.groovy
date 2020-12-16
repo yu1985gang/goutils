@@ -30,7 +30,7 @@ TestCase = load "${env.WORKSPACE}/scripts/TestCase.groovy"
 def preCheck(NE_SW_ID, NE_MO_CLASS_ID, NE_DIST_NAME, NE_HOST, NE_PORT, NE_USER_NAME, NE_PASSWORD, CUSTOM_INTEGRATION_PARAMS,
                 NE_TC_PACKAGE_URL, NE_TC_DOCKER_IMAGE_URL, NE_TC_PARAMETERS) {
     CUR_STAGE_NAME = "PRE_CHECK"
-    Precheck.validateParams(NE_SW_ID, NE_DIST_NAME, NE_HOST, NE_PORT, NE_USER_NAME, NE_PASSWORD)
+
     
     FP_PACKAGE_LINK = Precheck.getFPLink(ne_sw_id)
     echo "FP_PACKAGE_LINK: ${FP_PACKAGE_LINK}"
