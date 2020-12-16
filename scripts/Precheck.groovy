@@ -100,9 +100,8 @@ def validateHost(NE, CCTF) {
 }
 
 def pingAddress(String address, int account = 3) {
-<<<<<<< HEAD
     def rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping address"
-=======
+
     def rc = null
     if(isIPv4(address)){
         rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping address"
@@ -112,7 +111,6 @@ def pingAddress(String address, int account = 3) {
     })else{
         rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping dns"
     }
->>>>>>> 337d7f8 (add files)
     if (rc != 0) {
         error("ping ${address} timeout, please check")
     }

@@ -74,7 +74,6 @@ This image is used for running test cases.''',
                 }
             }
         }
-<<<<<<< HEAD
         stage('DownloadFP FP package'){
             steps {
                 script {
@@ -127,11 +126,5 @@ This image is used for running test cases.''',
             }
         }
     }
-=======
-
-    }
-
-
->>>>>>> 337d7f8 (add files)
 }
 
