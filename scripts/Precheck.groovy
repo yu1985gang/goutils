@@ -135,8 +135,8 @@ def pingNE(String address){
     if (Utils.isIPv4(address)){
         rc = sh script: "sh -i ${NodePem} sshUserName@ncmHost \"ping -c3 ${address}\"",returnStatus:true
     }else{
-        def interface = "eth0"
-        echo "interfact is $interface"
+        def kk = "eth0"
+        echo "interfact is $kk"
         rc = sh script: "sh -i ${NodePem} sshUserName@ncmHost \"ping -I eth0 -c3 ${address}\"", returnStatus:true
     }
     if (rc != 0) {
