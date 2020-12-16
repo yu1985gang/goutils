@@ -106,7 +106,7 @@ def pingAddress(String address, int account = 3) {
     if(isIPv4(address)){
         rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping address"
     }else (isIPv6(address){
-        def Interface = Utils.shCmd("/sbin/route -n | grep \"^0.0.0.0" | rev | cut -d' ' -f1 | rev", "Get IPV6 interface")
+        def Interface = Utils.shCmd('/sbin/route -n | grep "^0.0.0.0" | rev | cut -d \' \' -f1 | rev', "Get IPV6 interface")
         rc = sh script: "ping6 -${Interfacc}  xx  -c ${account} ${address}", returnStatus: true, label: "Ping ipv6 address"
     })else{
         rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping dns"
