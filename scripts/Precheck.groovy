@@ -130,6 +130,7 @@ def pingNE(String address){
     echo "host is $ncmHost"
     echo "sshUserName is $sshUserName"
     echo "address is $address"
+    Utils.shCmd("chmod 400 ${NodePem}","Set node.pme read-only permission")
     def rc=""
     if (Utils.isIPv4(address)){
         rc = sh script: "ssh -i ${NodePem} ${sshUserName}@${ncmHost} \"ping -c3 ${address}\"",returnStatus:true
