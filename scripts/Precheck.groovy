@@ -133,11 +133,11 @@ def pingNE(String address){
     Utils.shCmd("chmod 400 ${NodePem}","Set node.pme read-only permission")
     def rc=""
     if (Utils.isIPv4(address)){
-        rc = sh script: "ssh -i ${NodePem} ${sshUserName}@${ncmHost} \"ping -c3 ${address}\"",returnStatus:true
+        rc = sh script: "ssh -i ${NodePem} ${sshUserName}@${ncmHost} ping -c3 ${address}",returnStatus:true
     }else{
         def routeInterface = sh script:"/sbin/route -n | grep '^0.0.0.0' | rev | cut -d' ' -f1 | rev", returnStdout:true
         echo "routeInterface is $routeInterface"
-        rc = sh script: "ssh -i /var/node.pem ${sshUserName}@${ncmHost} 'ping6 -c3 -I ${routeInterface} ${address}'", returnStatus:true
+        rc = sh script: "ssh -i /var/node.pem ${sshUserName}@${ncmHost} ping6 -c3 -I ${routeInterface} ${address}", returnStatus:true
     }
     if (rc != 0) {
         error("ping address ${address} timeout, please check")
