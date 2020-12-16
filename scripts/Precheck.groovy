@@ -15,6 +15,8 @@ Utils = load "${env.WORKSPACE}/scripts/Utils.groovy"
 Conf = readYaml(file: "${env.WORKSPACE}/configuration/syve.yaml")
 LabInvertory = readYaml(file: "${env.WORKSPACE}/configuration/inventory.yaml")
 
+echo "LabInvertory is $LabInvertory"
+
 def validateParams(NE_SW_ID, NE_DIST_NAME, NE_HOST, NE_PORT, NE_USER_NAME, NE_PASSWORD) {
     if (!NE_SW_ID) {
         error('Parameter NE_SW_ID is mandatory but is missing.')
