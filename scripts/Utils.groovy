@@ -46,4 +46,11 @@ def isIPv6(String addr) {
     return addr.contains(":")
 }
 
+
+def readNodePem(string path){
+    def currentPath  = ${env.workspace}
+    Utils = load "${env.WORKSPACE}/scripts/Utils.groovy"
+}
+
+
 return this

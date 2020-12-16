@@ -110,7 +110,7 @@ def pingAddress(String address, int account = 3) {
         rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping dns"
     }
     if (rc != 0) {
-        error("ping ${address} timeout, please check")
+        error("ping address ${address} timeout, please check")
     }
 }
 
