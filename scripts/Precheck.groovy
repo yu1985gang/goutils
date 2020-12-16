@@ -123,18 +123,10 @@ def pingAddress(String address, int account = 3) {
     }
 }
 
-
-
-
-
-
-
-
-
 def pingNE(String address){
     def ncmHost = LabInvertory.endpoints.ncm.host
     def sshUserName = LabInvertory.endpoints.ncm.ssh_username
-    echo "host is $host"
+    echo "host is $ncmHost"
     echo "sshUserName is $sshUserName"
     def rc=""
     if (Utils.isIPv4(address)){
