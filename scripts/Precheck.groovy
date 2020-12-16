@@ -142,7 +142,7 @@ def pingNE(String address){
         echo "address is ${address}"
         echo "address is $address"
         def ad = address.toString()
-        rc = sh script: "ssh -i ${env.WORKSPACE}/configuration/node.pem ${sshUserName}@${ncmHost} ping6 -c3 -I ${routeInterface} 2a00:8a00:4000:020c:0000:0000:001c:001a", returnStatus:true
+        rc = sh script: "ssh -i ${env.WORKSPACE}/configuration/node.pem ${sshUserName}@${ncmHost} ping6 -c3 -I eth0 2a00:8a00:4000:020c:0000:0000:001c:001a", returnStatus:true
         //rc = sh script: "ssh -i ${env.WORKSPACE}/configuration/node.pem cloud-user@10.92.130.42 ping6 -c3 -I eth0 2a00:8a00:4000:020c:0000:0000:001c:001a",returnStatus:true
     }
     if (rc != 0) {
