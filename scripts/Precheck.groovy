@@ -128,7 +128,7 @@ def pingAddress(String address) {
         def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
         rc = sh script: "ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
     } else {
-        error("Not a valid address: ${address}")
+        error("Address is neigther IP or FQDN: ${address}")
     }
     if (rc != 0) {
         error("ping address ${address} timeout, please check")
