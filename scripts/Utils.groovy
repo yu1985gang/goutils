@@ -72,15 +72,20 @@ def isIPv6Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
     def cmd = ""
     def rt = ""
     if ((sshUerName.trim() == "") && (remoteIp.trim() == "") ) {
-        error("")
+        cmd = "host ${fqdn} |grep -i -c 'has address'"
     } else{
         cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'has IPv6 address' "
         
     }
     rt = sh script: cmd,returnStdout: true
+    rt = rt.trim().replaceAll("(\\r|\\n)", "")
     print "rt type is ${rt.getClass()}"
-    print rt =="1"
-    return rt == "1"
+    print "rt value is << $rt >>"
+    rt = Integer.parseInt(rt)
+    print "rt type is ${rt.getClass()}"
+    print "rt value is << $rt >>"
+    print rt == 1
+    return rt == 1
 }
 
 return this

@@ -148,7 +148,7 @@ def pingAddressFromLocal(String address) {
 def pingAddressFromLab(String address, String sshKey="", String sshUer ="", String remoteIp = "") {
     echo "go into pingAddressFromLab"
     Utils.shCmd("chmod 400 ${NodePem}","Set node.pme read-only permission")
-    def rc = ""null""
+    def rc = ""
     if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address,sshKey,sshUer,remoteIp)){
         rc = sh script: "ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
     }else if (Utils.isIPv6(address) || Utils.isIPv6Fqdn(address,sshKey,sshUer,remoteIp)){
