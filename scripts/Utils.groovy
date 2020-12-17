@@ -46,14 +46,31 @@ def isIPv6(String addr) {
     return addr.contains(":")
 }
 
-def isFqdn(String addr){
-    return ! (isIPv4(addr) || isIPv6(addr))
-    
+
+def isIPv4Fqdn(String fqdn,String sshKey="", String sshUerName ="", String remoteIp = ""){
+    def cmd = ""
+    def rt = ""
+    if ((sshUerName.trim() != "") && (remoteIp.trim() != "") ) {
+        cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host fqdn |grep -i -c 'has address' "
+    } else{
+        cmd = "host fqdn |grep -i -c 'has address'"
+    }
+    rt = shCmd(cmd,"check if FQDN configured as ipv4 format")
+    print "rt type is ${rt.getClass()}"
+    return rt == 1
 }
 
-
-def getFqdnType(String addr){
-
+def isIPv6Fqdn(String fqdn,String sshUerName ="", String sshKey=""){
+    def cmd = ""
+    def rt = ""
+    if ((sshUerName.trim() != "") && (remoteIp.trim() != "") ) {
+        cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host fqdn |grep -i -c 'has IPv6 address' "
+    } else{
+        cmd = "host fqdn |grep -i -c 'has address'"
+    }
+    rt = shCmd(cmd,"check if FQDN configured as ipv6 format")
+    print "rt type is ${rt.getClass()}"
+    return rt == 1
 }
 
 

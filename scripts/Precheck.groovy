@@ -97,18 +97,17 @@ def validateHost(NE, CCTF) {
     def addressMap = ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "CCTF_FQDN": CCTF.FQDN]
     addressMap.each { k, v ->
         if (v != null && "${v}".trim() != "") {
-            pingAddress(v)
+            pingAddressFromLocal(v)
             echo "Ping ${k} successfully"
         } else {
             error("Invalid conf, ${k}=${v}")
         }
     }
 
-
-    def addressMap2 = ["NE_HOST": neHost]
-    addressMap2.each { k, v ->
+    def neMap = ["NE_HOST": neHost]
+    neMap.each { k, v ->
         if (v != null && "${v}".trim() != "") {
-            pingNE(v)
+            pingAddressFromLab(v,NodePem,LabInvertory.endpoints.ncm.ssh_username,LabInvertory.endpoints.ncm.host)
             echo "Ping ${k} successfully"
         } else {
             error("Invalid conf, ${k}=${v}")
@@ -123,8 +122,38 @@ def pingAddress(String address, int account = 3) {
     }
 }
 
+def pingAddressFromLocal(String address, int account = 3) {
+    def rc = null
+    if ( Utils.isIPv4(address) || Util.isIPv4Fqdn(address)){
+        rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping ipv4 address"
+    }else if (Utils.isIPv6(address) || Util.isIPv6Fqdn(address)){
+        def intf = Util.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev")
+        rc = sh script: "ping6 -I ${intf}-c ${account} ${address}", returnStatus: true, label: "Ping ipv6 address"
+    } else {
+        error("Not a valid address: ${address}")
+    }
+    if (rc != 0) {
+        error("ping address ${address} timeout, please check")
+    }
 
-def pingNE(String address){
+}
+
+def pingAddressFromLab(String address, int account = 3, String sshKey="", String sshUerName ="", String remoteIp = "") {
+    def rc = null
+    if ( Utils.isIPv4(address) || Util.isIPv4Fqdn(address,sshKey,sshUerName,remoteIp)){
+        rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping ipv4 address"
+    }else if (Utils.isIPv6(address) || Util.isIPv6Fqdn(address,sshKey,sshUerName,remoteIp)){
+        def intf = Util.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev")
+        rc = sh script: "ping6 -I ${intf}-c ${account} ${address}", returnStatus: true, label: "Ping ipv6 address"
+    } else {
+        error("Not a valid address: ${address}")
+    }
+    if (rc != 0) {
+        error("ping address ${address} timeout, please check")
+    }
+}
+
+def checkNE(String address){
     def ncmHost = LabInvertory.endpoints.ncm.host
     def sshUserName = LabInvertory.endpoints.ncm.ssh_username
     echo "host is $ncmHost"
@@ -136,7 +165,7 @@ def pingNE(String address){
         rc = sh script: "ssh -i ${NodePem} ${sshUserName}@${ncmHost} ping -c3 ${address}",returnStatus:true
     }else{
         //def routeInterface = sh script:"/sbin/route -n | grep '^0.0.0.0' | rev | cut -d' ' -f1 | rev", returnStdout:true
-        def routeInterface = sh script:"netstat -rn | grep "^0.0.0.0" | rev | cut -d ' '  -f1 | rev", returnStdout:true
+        def routeInterface = sh script:"netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev", returnStdout:true
         routeInterface = routeInterface.trim().replaceAll("(\\r|\\n)", "")
         echo "routeInterface is $routeInterface"
         rc = sh script: "ssh -i ${env.WORKSPACE}/configuration/node.pem ${sshUserName}@${ncmHost} ping6 -c3 -I ${routeInterface} ${address}", returnStatus:true
