@@ -129,8 +129,10 @@ def pingAddressFromLocal(String address, int account = 3) {
     echo "go into pingAddressFromLocal"
     def rc = null
     if ( Utils.isIPv4(address) || Util.isIPv4Fqdn(address)){
+        echo "===> ipv4 address or ipv4 fqdn"
         rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping ipv4 address"
     }else if (Utils.isIPv6(address) || Util.isIPv6Fqdn(address)){
+        echo "===> ipv4 address or ipv4 fqdn"
         def intf = Util.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev")
         rc = sh script: "ping6 -I ${intf}-c ${account} ${address}", returnStatus: true, label: "Ping ipv6 address"
     } else {

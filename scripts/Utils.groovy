@@ -47,6 +47,7 @@ def isIPv6(String addr) {
 }
 
 def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
+    echo "===> isIPv4Fqdn"
     def cmd = ""
     def rt = ""
     if ((sshUerName.trim() == "") || (remoteIp.trim() == "") ) {
