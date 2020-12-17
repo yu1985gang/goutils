@@ -89,8 +89,9 @@ def validateHost(NE, CCTF) {
         neHost = selectedNE.FQDN
         echo "Use the ne host from configuration: NE_HOST=${neHost}"
     }
-    def addressMap = ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "NE_HOST": neHost, "CCTF_FQDN": CCTF.FQDN]
-    addressMap.each { k, v ->
+
+    def addressMapCheckedInLocal = ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "CCTF_FQDN": CCTF.FQDN]
+    addressMapCheckedInLocal.each { k, v ->
         if (v != null && "${v}".trim() != "") {
             pingAddress(v)
             echo "Ping ${k} successfully"
@@ -98,12 +99,58 @@ def validateHost(NE, CCTF) {
             error("Invalid conf, ${k}=${v}")
         }
     }
+
+    def addressMapCheckedRemotely = ["NE_HOST": neHost]
+    addressMapCheckedRemotely.each { k, v ->
+        if (v != null && "${v}".trim() != "") {
+            pingAddress(v,genSshKeyFile(),Conf.NOM[0].NOM_SSH_USERNAME,Conf.NOM[0].NOM_EDGE_NODE_HOST)
+            echo "Ping ${k} successfully"
+        } else {
+            error("Invalid conf, ${k}=${v}")
+        }
+    }
 }
 
-def pingAddress(String address, int account = 3) {
-    def rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping address"
+def pingAddress(String address) {
+    // execute ping command on tlocal server
+    def rc = ""
+    if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address)){
+        rc = sh script: "ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
+    }else if (Utils.isIPv6(address) || Utils.isIPv6Fqdn(address)){
+        def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
+        rc = sh script: "ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
+    } else {
+        error("Address is neigther IP or FQDN: ${address}")
+    }
     if (rc != 0) {
-        error("ping ${address} timeout, please check")
+        error("ping address ${address} timeout, please check")
+    }
+}
+
+def pingAddress(String address, String sshKey, String sshUer="cloud-user", String remoteIp) {
+    //execute ping command on remote server, e.g, ping NE on NOM
+    def rc = ""
+    if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address,sshKey,sshUer,remoteIp)){
+        rc = sh script: "ssh -i ${sshKey} ${sshUer}@${remoteIp} ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
+    }else if (Utils.isIPv6(address) || Utils.isIPv6Fqdn(address,sshKey,sshUer,remoteIp)){
+        def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
+        rc = sh script: "ssh -i ${sshKey} ${sshUer}@${remoteIp} ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
+    } else {
+        error("Address is neigther IP or FQDN: ${address}")
+    }
+    if (rc != 0) {
+        error("ping address ${address} timeout, please check")
+    }
+}
+
+def genSshKeyFile(){
+    Utils.shCmd("rm -rf ${env.WORKSPACE}/node.pem")
+    writeFile file: "${env.WORKSPACE}/node.pem", text: "${Conf.NOM[0].NOM_SSH_KEY_FILE}"
+    if(!fileExists("${env.WORKSPACE}/node.pem")){
+        error("Generate ssh key file failed")
+    }else{
+        Utils.shCmd("chmod 400 ${env.WORKSPACE}/node.pem","Set ssh key file as read-only permission")
+        return "${env.WORKSPACE}/node.pem"
     }
 }
 
