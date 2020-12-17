@@ -55,9 +55,9 @@ def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
     // } else{
     //     cmd = "host fqdn |grep -i -c 'has address'"
     // }
-    rt = sh script: cmd,returnStdout: true
-    print "rt type is ${rt.getClass()}"
-    return rt == 1
+    // rt = sh script: cmd,returnStdout: true
+    // print "rt type is ${rt.getClass()}"
+    // return rt == 1
 }
 
 // def isIPv6Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
