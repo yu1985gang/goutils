@@ -52,9 +52,9 @@ def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
     def cmd = ""
     def rt = ""
     if ((sshUerName.trim() == "") || (remoteIp.trim() == "") ) {
-        cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host fqdn |grep -i -c 'has address' "
-    } else{
         cmd = "host fqdn |grep -i -c 'has address'"
+    } else{
+        cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host fqdn |grep -i -c 'has address' "
     }
     rt = sh script: cmd,returnStdout: true
     print "rt type is ${rt.getClass()}"
@@ -65,9 +65,10 @@ def isIPv6Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
     def cmd = ""
     def rt = ""
     if ((sshUerName.trim() == "") && (remoteIp.trim() == "") ) {
-        cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host fqdn |grep -i -c 'has IPv6 address' "
-    } else{
         cmd = "host fqdn |grep -i -c 'has address'"
+    } else{
+        cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host fqdn |grep -i -c 'has IPv6 address' "
+        
     }
     rt = sh script: cmd,returnStdout: true
     print "rt type is ${rt.getClass()}"
