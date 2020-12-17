@@ -52,23 +52,27 @@ def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
     if (isIPv6(fqdn) || isIPv4(fqdn)){
         return false
     }
+    echo "isIPv4Fqdn:$fqdn"
     def cmd=""
+    def rt=""
     if ((sshUerName.trim() == "") || (remoteIp.trim() == "") ) {
         cmd = "host ${fqdn} |grep -i -c 'has address'"
     } else{
         cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'has address' "
     }
-    def rt = shCmd(cmd).trim().replaceAll("(\\r|\\n)", "")
-    print "rt type is ${rt.getClass()}"
-    print "rt value is ${rt}"
+    try{
+        rt = shCmd(cmd).trim().replaceAll("(\\r|\\n)", "")
+        print "rt type is ${rt.getClass()}"
+        print "rt value is ${rt}"
+    }catch(){
+        error("FQDN ${address} not found")
+    }
+    
     try{
         rt = Integer.parseInt(rt)
     }catch (NumberFormatException e) {
             // do nothing
         }
-    //rt = sh script: cmd,returnStdout: true
-    //rt = rt.trim().replaceAll("(\\r|\\n)", "")
-    print rt==1
     return rt == 1
 }
 
@@ -76,7 +80,7 @@ def isIPv6Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
     if (isIPv6(fqdn) || isIPv4(fqdn)){
         return false
     }
-    echo "===> isIPv6Fqdn"
+    echo "isIPv6Fqdn:$fqdn"
     def cmd = ""
     if ((sshUerName.trim() == "") && (remoteIp.trim() == "") ) {
         cmd = "host ${fqdn} |grep -i -c 'has address'"
@@ -84,8 +88,6 @@ def isIPv6Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
         cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'has IPv6 address' "
     }
     def rt = shCmd(cmd).trim().replaceAll("(\\r|\\n)", "")
-    //rt = sh script: cmd,returnStdout: true
-    //rt = rt.trim().replaceAll("(\\r|\\n)", "")
     try{
         rt = Integer.parseInt(rt)
     }catch (NumberFormatException e){

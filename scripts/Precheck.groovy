@@ -118,22 +118,12 @@ def validateHost(NE, CCTF) {
     }
 }
 
-def pingAddress(String address, int account = 3) {
-    def rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping address"
-    if (rc != 0) {
-        error("ping address ${address} timeout, please check")
-    }
-}
-
 def pingAddressFromLocal(String address) {
-    echo "start ping address ${address} in pingAddressFromLocal"
+    echo "start ping $address in pingAddressFromLocal"
     def rc = ""
-    echo "1"
     if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address)){
-        echo "===> ipv4 address or ipv4 fqdn"
         rc = sh script: "ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
     }else if (Utils.isIPv6(address) || Utils.isIPv6Fqdn(address)){
-        echo "===> ipv6 address or ipv6 fqdn"
         def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
         rc = sh script: "ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
     } else {
@@ -146,6 +136,7 @@ def pingAddressFromLocal(String address) {
 }
 
 def pingAddressFromLab(String address, String sshKey="", String sshUer ="", String remoteIp = "") {
+    echo "start ping $address in pingAddressFromLab"
     echo "start ping addess ${address} in pingAddressFromLab"
     Utils.shCmd("chmod 400 ${NodePem}","Set node.pme read-only permission")
     def rc = ""
@@ -161,30 +152,6 @@ def pingAddressFromLab(String address, String sshKey="", String sshUer ="", Stri
         error("ping address ${address} timeout, please check")
     }
 }
-
-def checkNE(String address){
-    def ncmHost = LabInvertory.endpoints.ncm.host
-    def sshUserName = LabInvertory.endpoints.ncm.ssh_username
-    echo "host is $ncmHost"
-    echo "sshUserName is $sshUserName"
-    
-    Utils.shCmd("chmod 400 ${NodePem}","Set node.pme read-only permission")
-    def rc=""
-    if (Utils.isIPv4(address)){
-        rc = sh script: "ssh -i ${NodePem} ${sshUserName}@${ncmHost} ping -c3 ${address}",returnStatus:true
-    }else{
-        //def routeInterface = sh script:"/sbin/route -n | grep '^0.0.0.0' | rev | cut -d' ' -f1 | rev", returnStdout:true
-        def routeInterface = sh script:"netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev", returnStdout:true
-        routeInterface = routeInterface.trim().replaceAll("(\\r|\\n)", "")
-        echo "routeInterface is $routeInterface"
-        rc = sh script: "ssh -i ${env.WORKSPACE}/configuration/node.pem ${sshUserName}@${ncmHost} ping6 -c3 -I ${routeInterface} ${address}", returnStatus:true
-    }
-    if (rc != 0) {
-        error("ping address ${address} timeout, please check")
-    }
-
-}
-
 
 def createParamOptionalMap(String customIntegrationParams) {
     def paramOptionalMap = [:]
