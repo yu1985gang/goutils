@@ -28,6 +28,7 @@ def getDate() {
 }
 
 def isIPv4(String addr) {
+    echo "isIPv4 called"
     if (addr.contains(".")) {
         String[] items = addr.split("\\.")
         try {

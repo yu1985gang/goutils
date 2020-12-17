@@ -127,13 +127,14 @@ def pingAddress(String address, int account = 3) {
 
 def pingAddressFromLocal(String address, int account = 3) {
     echo "go into pingAddressFromLocal"
-    def rc = null
-    if ( Utils.isIPv4(address) || Util.isIPv4Fqdn(address)){
+    def rc = ""
+    echo "1"
+    if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address)){
         echo "===> ipv4 address or ipv4 fqdn"
         rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping ipv4 address"
-    }else if (Utils.isIPv6(address) || Util.isIPv6Fqdn(address)){
+    }else if (Utils.isIPv6(address) || Utils.isIPv6Fqdn(address)){
         echo "===> ipv4 address or ipv4 fqdn"
-        def intf = Util.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev")
+        def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev")
         rc = sh script: "ping6 -I ${intf}-c ${account} ${address}", returnStatus: true, label: "Ping ipv6 address"
     } else {
         error("Not a valid address: ${address}")
@@ -147,10 +148,10 @@ def pingAddressFromLocal(String address, int account = 3) {
 def pingAddressFromLab(String address, int account = 3, String sshKey="", String sshUerName ="", String remoteIp = "") {
     echo "go into pingAddressFromLab"
     def rc = null
-    if ( Utils.isIPv4(address) || Util.isIPv4Fqdn(address,sshKey,sshUerName,remoteIp)){
+    if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address,sshKey,sshUerName,remoteIp)){
         rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping ipv4 address"
-    }else if (Utils.isIPv6(address) || Util.isIPv6Fqdn(address,sshKey,sshUerName,remoteIp)){
-        def intf = Util.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev")
+    }else if (Utils.isIPv6(address) || Utils.isIPv6Fqdn(address,sshKey,sshUerName,remoteIp)){
+        def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev")
         rc = sh script: "ping6 -I ${intf}-c ${account} ${address}", returnStatus: true, label: "Ping ipv6 address"
     } else {
         error("Not a valid address: ${address}")
