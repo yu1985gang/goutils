@@ -47,7 +47,7 @@ def isIPv6(String addr) {
 }
 
 
-def isIPv4Fqdn(String fqdn,String sshKey="", String sshUerName ="", String remoteIp = ""){
+def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
     def cmd = ""
     def rt = ""
     if ((sshUerName.trim() != "") && (remoteIp.trim() != "") ) {
@@ -60,7 +60,7 @@ def isIPv4Fqdn(String fqdn,String sshKey="", String sshUerName ="", String remot
     return rt == 1
 }
 
-def isIPv6Fqdn(String fqdn,String sshUerName ="", String sshKey=""){
+def isIPv6Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
     def cmd = ""
     def rt = ""
     if ((sshUerName.trim() != "") && (remoteIp.trim() != "") ) {
@@ -72,8 +72,5 @@ def isIPv6Fqdn(String fqdn,String sshUerName ="", String sshKey=""){
     print "rt type is ${rt.getClass()}"
     return rt == 1
 }
-
-
-
 
 return this
