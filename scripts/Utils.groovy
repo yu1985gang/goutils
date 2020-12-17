@@ -46,31 +46,30 @@ def isIPv6(String addr) {
     return addr.contains(":")
 }
 
+def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
+    def cmd = ""
+    def rt = ""
+    if ((sshUerName.trim() == "") || (remoteIp.trim() == "") ) {
+        cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host fqdn |grep -i -c 'has address' "
+    } else{
+        cmd = "host fqdn |grep -i -c 'has address'"
+    }
+    rt = sh script: cmd,returnStdout: true
+    print "rt type is ${rt.getClass()}"
+    return rt == 1
+}
 
-// def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
-//     def cmd = ""
-//     def rt = ""
-//     // if ((sshUerName.trim() == "") || (remoteIp.trim() == "") ) {
-//     //     cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host fqdn |grep -i -c 'has address' "
-//     // } else{
-//     //     cmd = "host fqdn |grep -i -c 'has address'"
-//     // }
-//     // rt = sh script: cmd,returnStdout: true
-//     // print "rt type is ${rt.getClass()}"
-//     // return rt == 1
-// }
-
-// def isIPv6Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
-//     def cmd = ""
-//     def rt = ""
-//     if ((sshUerName.trim() != "") && (remoteIp.trim() != "") ) {
-//         cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host fqdn |grep -i -c 'has IPv6 address' "
-//     } else{
-//         cmd = "host fqdn |grep -i -c 'has address'"
-//     }
-//     rt = sh script: cmd,returnStdout: true
-//     print "rt type is ${rt.getClass()}"
-//     return rt == 1
-// }
+def isIPv6Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
+    def cmd = ""
+    def rt = ""
+    if ((sshUerName.trim() == "") && (remoteIp.trim() == "") ) {
+        cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host fqdn |grep -i -c 'has IPv6 address' "
+    } else{
+        cmd = "host fqdn |grep -i -c 'has address'"
+    }
+    rt = sh script: cmd,returnStdout: true
+    print "rt type is ${rt.getClass()}"
+    return rt == 1
+}
 
 return this
