@@ -135,7 +135,7 @@ def pingAddress(String address) {
     }
 }
 
-def pingAddress(String address, String sshKey="", String sshUer ="", String remoteIp = "") {
+def pingAddress(String address, String sshKey, String sshUer, String remoteIp) {
     //ping address from remote server
     echo "start ping $address from remote server"
     Utils.shCmd("chmod 400 ${NodePem}","Set node.pem as read-only permission")
