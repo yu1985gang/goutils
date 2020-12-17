@@ -125,7 +125,7 @@ def pingAddress(String address, int account = 3) {
     }
 }
 
-def pingAddressFromLocal(String address, int account = 3) {
+def pingAddressFromLocal(String address) {
     echo "go into pingAddressFromLocal"
     def rc = ""
     echo "1"
@@ -145,14 +145,15 @@ def pingAddressFromLocal(String address, int account = 3) {
 
 }
 
-def pingAddressFromLab(String address, int account = 3, String sshKey="", String sshUerName ="", String remoteIp = "") {
+def pingAddressFromLab(String address, String sshKey="", String sshUer ="", String remoteIp = "") {
     echo "go into pingAddressFromLab"
-    def rc = null
-    if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address,sshKey,sshUerName,remoteIp)){
-        rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping ipv4 address"
-    }else if (Utils.isIPv6(address) || Utils.isIPv6Fqdn(address,sshKey,sshUerName,remoteIp)){
+    Utils.shCmd("chmod 400 ${NodePem}","Set node.pme read-only permission")
+    def rc = ""null""
+    if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address,sshKey,sshUer,remoteIp)){
+        rc = sh script: "ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
+    }else if (Utils.isIPv6(address) || Utils.isIPv6Fqdn(address,sshKey,sshUer,remoteIp)){
         def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev")
-        rc = sh script: "ping6 -I ${intf}-c ${account} ${address}", returnStatus: true, label: "Ping ipv6 address"
+        rc = sh script: "ping6 -I ${intf}-c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
     } else {
         error("Not a valid address: ${address}")
     }
