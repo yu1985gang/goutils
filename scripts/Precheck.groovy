@@ -135,10 +135,11 @@ def pingNE(String address){
     if (Utils.isIPv4(address)){
         rc = sh script: "ssh -i ${NodePem} ${sshUserName}@${ncmHost} ping -c3 ${address}",returnStatus:true
     }else{
-        def routeInterface = sh script:"/sbin/route -n | grep '^0.0.0.0' | rev | cut -d' ' -f1 | rev", returnStdout:true
-        def intf = routeInterface.trim().replaceAll("(\\r|\\n)", "")
-        echo "intf is $intf"
-        rc = sh script: "ssh -i ${env.WORKSPACE}/configuration/node.pem ${sshUserName}@${ncmHost} ping6 -c3 -I ${intf} ${address}", returnStatus:true
+        //def routeInterface = sh script:"/sbin/route -n | grep '^0.0.0.0' | rev | cut -d' ' -f1 | rev", returnStdout:true
+        def routeInterface = sh script:"netstat -rn | grep "^0.0.0.0" | rev | cut -d ' '  -f1 | rev", returnStdout:true
+        routeInterface = routeInterface.trim().replaceAll("(\\r|\\n)", "")
+        echo "routeInterface is $routeInterface"
+        rc = sh script: "ssh -i ${env.WORKSPACE}/configuration/node.pem ${sshUserName}@${ncmHost} ping6 -c3 -I ${routeInterface} ${address}", returnStatus:true
     }
     if (rc != 0) {
         error("ping address ${address} timeout, please check")

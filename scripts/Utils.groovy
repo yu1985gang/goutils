@@ -46,5 +46,17 @@ def isIPv6(String addr) {
     return addr.contains(":")
 }
 
+def isFqdn(String addr){
+    return ! (isIPv4(addr) || isIPv6(addr))
+    
+}
+
+
+def getFqdnType(String addr){
+
+}
+
+
+
 
 return this
