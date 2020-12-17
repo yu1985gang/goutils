@@ -48,71 +48,42 @@ def isIPv6(String addr) {
 }
 
 def isIPv4Fqdn(String fqdn){
-    def dnsNotCfg = sh script: "host ${fqdn} |grep -i -c 'not found'",returnStatus:true
-    def dnsIPv4Cfg = shCmd("host ${fqdn} |grep -i -c 'has address'").trim().replaceAll("(\\r|\\n)", "")
-    try{
-        dnsIPv4Cfg = Integer.parseInt(dnsIPv4Cfg)
-    }catch(NumberFormatException e){
-        //do nothing
-    }
-    if (isIPv6(fqdn) || isIPv4(fqdn) || dnsNotCfg != 0){
+    //def dnsNotCfg = sh script: "host ${fqdn} |grep -i 'not found'",returnStatus:true
+    def dnsIPv4Cfg = sh script: "host ${fqdn} |grep -i 'has address'"),returnStatus:true
+    if (isIPv4(fqdn) || isIPv6(fqdn) || dnsIPv4Cfg != 0){
         return false
-    } else if (dnsIPv4Cfg == 1){
-        return true
-    } 
-    return false
-    
+    }
+    return true 
 }
 
 
 def isIPv4Fqdn(String fqdn,String sshKey, String sshUerName, String remoteIp){
 
-    def dnsNotCfg = sh script: ("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'not found'"),returnStatus:true
-    def dnsIPv4Cfg = shCmd("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'has address'").trim().replaceAll("(\\r|\\n)", "")
-    try{
-        dnsIPv4Cfg = Integer.parseInt(dnsIPv4Cfg)
-    }catch(NumberFormatException e){
-        //do nothing
-    }
-    if (isIPv6(fqdn) || isIPv4(fqdn) || dnsNotCfg != 0){
+    //def dnsNotCfg = sh script: ("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'not found'"),returnStatus:true
+    def dnsIPv4Cfg = sh script:"ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'has address'"),returnStatus:true
+    if (isIPv4(fqdn) || isIPv6(fqdn) || dnsIPv4Cfg != 0){
         return false
-    } else if (dnsIPv4Cfg == 1){
-        return true
     }
-    return false
+    return true
 }
 
 
 def isIPv6Fqdn(String fqdn){
-    def dnsNotCfg = sh script: "host ${fqdn} |grep -i -c 'not found'",returnStatus:true
-    def dnsIPv6Cfg = shCmd("host ${fqdn} |grep -i -c 'has IPv6 Ipaddress'").trim().replaceAll("(\\r|\\n)", "")
-    try{
-        dnsIPv6Cfg = Integer.parseInt(dnsIPv6Cfg)
-    }catch(NumberFormatException e){
-        //do nothing
-    }
-    if (isIPv6(fqdn) || isIPv4(fqdn) || dnsNotCfg != 0){
+    //def dnsNotCfg = sh script: "host ${fqdn} |grep -i 'not found'",returnStatus:true
+    def dnsIPv6Cfg = sh script: "host ${fqdn} |grep -i 'has IPv6 Ipaddress'"),,returnStatus:true
+    if (isIPv4(fqdn) || isIPv6(fqdn) || dnsIPv6Cfg != 0){
         return false
-    } else if (dnsIPv6Cfg == 1){
-        return true
     }
-    return false
+    return true
 }
 
 def isIPv6Fqdn(String fqdn,String sshKey, String sshUerName, String remoteIp){
-    def dnsNotCfg = sh script: ("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'not found'"),returnStatus:true
-    def dnsIPv6Cfg = shCmd("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'has IPv6 address'").trim().replaceAll("(\\r|\\n)", "")
-    try{
-        dnsIPv6Cfg = Integer.parseInt(dnsIPv6Cfg)
-    }catch(NumberFormatException e){
-        //do nothing
-    }
-    if (isIPv6(fqdn) || isIPv4(fqdn) || dnsNotCfg != 0){
+    //def dnsNotCfg = sh script: ("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'not found'"),returnStatus:true
+    def dnsIPv6Cfg = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'has IPv6 address'"),returnStatus:true
+    if (isIPv4(fqdn) || isIPv6(fqdn) || dnsIPv6Cfg!= 0 ){
         return false
-    } else if (dnsIPv6Cfg == 1){
-        return true
     }
-    return false
+    return true
 }
 
 return this
