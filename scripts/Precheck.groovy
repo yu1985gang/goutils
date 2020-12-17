@@ -126,7 +126,7 @@ def pingAddress(String address, int account = 3) {
 }
 
 def pingAddressFromLocal(String address) {
-    echo "go into pingAddressFromLocal"
+    echo "start ping address ${address} in pingAddressFromLocal"
     def rc = ""
     echo "1"
     if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address)){
@@ -146,7 +146,7 @@ def pingAddressFromLocal(String address) {
 }
 
 def pingAddressFromLab(String address, String sshKey="", String sshUer ="", String remoteIp = "") {
-    echo "go into pingAddressFromLab"
+    echo "start ping addess ${address} in pingAddressFromLab"
     Utils.shCmd("chmod 400 ${NodePem}","Set node.pme read-only permission")
     def rc = ""
     if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address,sshKey,sshUer,remoteIp)){
