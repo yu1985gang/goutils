@@ -5,7 +5,9 @@ import groovy.transform.Field
 @Field private Conf = null
 @Field private GET_LATEST_FP_PACKAGE = "%s/api/storage/netact-fast-pass-release-local/fast_pass_packages/%s?lastModified"
 
-@Field private LabInvertory = null
+//@Field private LabInvertory = null
+@Field private edgeIp = "10.92.130.124"
+@Field private sshUser = "cloud-user"
 @Field private NodePem = "${env.WORKSPACE}/configuration/node.pem"
 
 echo "Loaded class Precheck.groovy"
@@ -13,9 +15,9 @@ echo "Loaded class Precheck.groovy"
 Utils = load "${env.WORKSPACE}/scripts/Utils.groovy"
 //DnValidator = load "${env.WORKSPACE}/scripts/Validator.groovy"
 Conf = readYaml(file: "${env.WORKSPACE}/configuration/syve.yaml")
-LabInvertory = readYaml(file: "${env.WORKSPACE}/configuration/inventory.yaml")
+//LabInvertory = readYaml(file: "${env.WORKSPACE}/configuration/inventory.yaml")
 
-echo "LabInvertory is $LabInvertory"
+//echo "LabInvertory is $LabInvertory"
 
 def validateParams(NE_SW_ID, NE_DIST_NAME, NE_HOST, NE_PORT, NE_USER_NAME, NE_PASSWORD) {
     if (!NE_SW_ID) {
@@ -107,7 +109,7 @@ def validateHost(NE, CCTF) {
     def neMap = ["NE_HOST": neHost]
     neMap.each { k, v ->
         if (v != null && "${v}".trim() != "") {
-            pingAddressFromLab(v,NodePem,LabInvertory.endpoints.ncm.ssh_username,LabInvertory.endpoints.ncm.host)
+            pingAddressFromLab(v,NodePem,sshUser,edgeIp)
             echo "Ping ${k} successfully"
         } else {
             error("Invalid conf, ${k}=${v}")
