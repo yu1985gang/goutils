@@ -159,7 +159,7 @@ def genSshKeyFile(){
         error("Generate ssh key file failed")
     }else{
         Utils.shCmd("chmod 400 ${env.WORKSPACE}/node.pem","Set ssh key file as read-only permission")
-        return "${env.WORKSPACE}/node.pem
+        return "${env.WORKSPACE}/node.pem"
     }
 }
 
