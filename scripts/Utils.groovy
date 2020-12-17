@@ -57,6 +57,7 @@ def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
         cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'has address' "
     }
     rt = sh script: cmd,returnStdout: true
+    rt = rt.trim().replaceAll("(\\r|\\n)", "")
     print "rt type is ${rt.getClass()}"
     print "rt value is << $rt >>"
     rt = Integer.parseInt(rt)
