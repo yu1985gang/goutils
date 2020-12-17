@@ -1,22 +1,16 @@
 import groovy.transform.Field
 
 @Field private Utils = null
+@Field private DnValidator = null
 @Field private selectedNE = null
 @Field private Conf = null
 @Field private GET_LATEST_FP_PACKAGE = "%s/api/storage/netact-fast-pass-release-local/fast_pass_packages/%s?lastModified"
 
-//@Field private LabInvertory = null
-@Field private edgeIp = "10.92.130.124"
-@Field private sshUser = "cloud-user"
-
 echo "Loaded class Precheck.groovy"
 
 Utils = load "${env.WORKSPACE}/scripts/Utils.groovy"
-//DnValidator = load "${env.WORKSPACE}/scripts/Validator.groovy"
+DnValidator = load "${env.WORKSPACE}/scripts/DnValidator.groovy"
 Conf = readYaml(file: "${env.WORKSPACE}/configuration/syve.yaml")
-//LabInvertory = readYaml(file: "${env.WORKSPACE}/configuration/inventory.yaml")
-
-//echo "LabInvertory is $LabInvertory"
 
 def validateParams(NE_SW_ID, NE_DIST_NAME, NE_HOST, NE_PORT, NE_USER_NAME, NE_PASSWORD) {
     if (!NE_SW_ID) {
@@ -25,9 +19,9 @@ def validateParams(NE_SW_ID, NE_DIST_NAME, NE_HOST, NE_PORT, NE_USER_NAME, NE_PA
     if (!NE_DIST_NAME) {
         error('Parameter NE_DIST_NAME is mandatory but is missing.')
     }
-//    if (!DnValidator.validateDistName(NE_DIST_NAME)) {
-//        error('Parameter NE_DIST_NAME is invalid format')
-//    }
+    if (!DnValidator.isValidDistName(NE_DIST_NAME)) {
+        error('Parameter NE_DIST_NAME is invalid format, please check with DN spec.')
+    }
     if (!NE_HOST) {
         error('Parameter NE_HOST is mandatory but is missing.')
     }
@@ -87,7 +81,6 @@ def getDefaultConf() {
 
 def validateHost(NE, CCTF) {
     //Ping NOM_BASE_DOMAIN, NE_HOST and CCTF_FQDN
-    echo "go into validateHost"
     def neHost = '0.0.0.0'
     if (NE['host']) {
         neHost = NE['host']
@@ -96,8 +89,8 @@ def validateHost(NE, CCTF) {
         neHost = selectedNE.FQDN
         echo "Use the ne host from configuration: NE_HOST=${neHost}"
     }
-    def addressMapCheckedInLocal = ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "CCTF_FQDN": CCTF.FQDN]
-    addressMapCheckedInLocal.each { k, v ->
+    def addressMap = ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "NE_HOST": neHost, "CCTF_FQDN": CCTF.FQDN]
+    addressMap.each { k, v ->
         if (v != null && "${v}".trim() != "") {
             pingAddress(v)
             echo "Ping ${k} successfully"
@@ -105,58 +98,12 @@ def validateHost(NE, CCTF) {
             error("Invalid conf, ${k}=${v}")
         }
     }
-
-    def addressMapCheckedRemotely = ["NE_HOST": neHost]
-    addressMapCheckedRemotely.each { k, v ->
-        if (v != null && "${v}".trim() != "") {
-            pingAddress(v,genSshKeyFile(),Conf.NOM[0].NOM_SSH_USERNAME,Conf.NOM[0].NOM_EDGE_NODE_HOST)
-            echo "Ping ${k} successfully"
-        } else {
-            error("Invalid conf, ${k}=${v}")
-        }
-    }
 }
 
-def pingAddress(String address) {
-    // execute ping command on tlocal server
-    def rc = ""
-    if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address)){
-        rc = sh script: "ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
-    }else if (Utils.isIPv6(address) || Utils.isIPv6Fqdn(address)){
-        def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
-        rc = sh script: "ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
-    } else {
-        error("Address is neigther IP or FQDN: ${address}")
-    }
+def pingAddress(String address, int account = 3) {
+    def rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping address"
     if (rc != 0) {
-        error("ping address ${address} timeout, please check")
-    }
-}
-
-def pingAddress(String address, String sshKey, String sshUer="cloud-user", String remoteIp) {
-    //execute ping command on remote server, e.g, ping NE on NOM
-    def rc = ""
-    if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address,sshKey,sshUer,remoteIp)){
-        rc = sh script: "ssh -i ${sshKey} ${sshUer}@${remoteIp} ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
-    }else if (Utils.isIPv6(address) || Utils.isIPv6Fqdn(address,sshKey,sshUer,remoteIp)){
-        def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
-        rc = sh script: "ssh -i ${sshKey} ${sshUer}@${remoteIp} ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
-    } else {
-        error("Address is neigther IP or FQDN: ${address}")
-    }
-    if (rc != 0) {
-        error("ping address ${address} timeout, please check")
-    }
-}
-
-def genSshKeyFile(){
-    Utils.shCmd("rm -rf ${env.WORKSPACE}/node.pem")
-    writeFile file: "${env.WORKSPACE}/node.pem", text: "${Conf.NOM[0].NOM_SSH_KEY_FILE}"
-    if(!fileExists("${env.WORKSPACE}/node.pem")){
-        error("Generate ssh key file failed")
-    }else{
-        Utils.shCmd("chmod 400 ${env.WORKSPACE}/node.pem","Set ssh key file as read-only permission")
-        return "${env.WORKSPACE}/node.pem"
+        error("ping ${address} timeout, please check")
     }
 }
 
@@ -177,7 +124,7 @@ def createParamOptionalMap(String customIntegrationParams) {
     return paramOptionalMap
 }
 
-def validateAndGenPlan(paramMap, paramOptionalMap, conf, fpPackageLink) {
+def validateAndGenPlan(paramMap, paramOptionalMap, conf, fpPackageLink, NE_CERTIFICATES) {
     def allParametersFilled = paramMap.every { _, v ->
         v != null && "${v}".trim() != ""
     }
@@ -210,6 +157,12 @@ def validateAndGenPlan(paramMap, paramOptionalMap, conf, fpPackageLink) {
     }
     paramMap["sbiNetConnectedTo"] = sbiNetConnectedTo
 
+
+    if (NE_CERTIFICATES != '') {
+        paramMap["tlsHostNameCheck"]="False"
+        paramMap["tlsCA"] = "<![CDATA[${NE_CERTIFICATES}]]>"
+    }
+
     println 'integration plan is generated from jenkins parameters'
     return genPlan(paramMap, paramOptionalMap)
 }
@@ -222,23 +175,7 @@ def genPlan(Map<String, String> paramMap, Map<String, String> paramOptionalMap) 
 
     def dn = "${paramMap.distName}".split('/')[0]
     def planName = "chengdu-${dn}-integration-plan"
-//        INTEGRATION_PLAN_NAME = planName
     def logTime = Utils.getDate()
-    // formatted xml
-/***
- def raml = "<raml xmlns=\"raml21.xsd\" version=\"2.1\">\n" +
- "  <cmData type=\"plan\" scope=\"all\" name=\"${planName}\">\n" +
- "    <header>\n" +
- "      <log dateTime=\"${logTime}\" action=\"created\" />\n" +
- "    </header>\n" +
- "    <managedObject class=\"${paramMap.class}\" distName=\"${paramMap.distName}\" operation=\"create\" version=\"${paramMap.version}\">\n"
-
- param.each { k, v ->
- raml += "      <p name=\"${k}\">${v}</p>\n"}validPo.each { k, v ->
- raml += "      <p name=\"${k}\">${v}</p>\n"}raml += "    </managedObject>\n" +
- "  </cmData>\n" +
- "</raml>\n"
- ***/
     // linearized xml
     def raml = "<raml xmlns=\"raml21.xsd\" version=\"2.1\">" +
             "<cmData type=\"plan\" scope=\"all\" name=\"${planName}\">" +
@@ -257,8 +194,6 @@ def genPlan(Map<String, String> paramMap, Map<String, String> paramOptionalMap) 
     raml += "</managedObject></cmData></raml>"
 
     println raml
-//    println "serialized: \n" + groovy.xml.XmlUtil.serialize(raml)
-//        INTEGRATION_PLAN = raml
     return [planName, raml]
 }
 

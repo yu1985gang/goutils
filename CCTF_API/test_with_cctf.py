@@ -413,7 +413,7 @@ class CCTFProject(requests.Session):
 
 def format_test_parameters(parameter_string):
     parameter_list = str(parameter_string).split(",")
-    parameter_json = json.loads('{"test_package_info":{"test_tool_arg":"-V src/parameters.yaml"}}')
+    parameter_json = json.loads('{"test_package_info":{"test_tool_arg":"-V neo-syve/parameters.yaml"}}')
     tp_parameters = {}
     ne_parameters = {}
 

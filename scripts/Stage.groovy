@@ -2,11 +2,8 @@ import groovy.transform.Field
 @Field private STAGE = "scope:nom_syve|name:%s|status:%s"
 @Field private Conf = null
 
-
 echo "Loaded class Stage.groovy"
 Conf = readYaml(file: "${env.WORKSPACE}/configuration/syve.yaml")
-
-
 
 def stageStarted(String packageName, String stageName, String props = "") {
     sendFeedback(packageName, String.format(STAGE, stageName, 'started'), 0, props)
