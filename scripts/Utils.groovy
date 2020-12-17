@@ -52,7 +52,7 @@ def isNotFqdn(String addr){
 }
 
 def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
-    if isNotFqdn(fqdn){
+    if (isNotFqdn(fqdn)){
         return false
     }
     echo "===> isIPv4Fqdn"
@@ -75,7 +75,7 @@ def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
 }
 
 def isIPv6Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
-    if isNotFqdn(fqdn){
+    if (isNotFqdn(fqdn)){
         return false
     }
     echo "===> isIPv6Fqdn"
