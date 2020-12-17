@@ -152,8 +152,8 @@ def pingAddressFromLab(String address, String sshKey="", String sshUer ="", Stri
     if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address,sshKey,sshUer,remoteIp)){
         rc = sh script: "ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
     }else if (Utils.isIPv6(address) || Utils.isIPv6Fqdn(address,sshKey,sshUer,remoteIp)){
-        def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev")
-        rc = sh script: "ping6 -I ${intf}-c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
+        def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
+        rc = sh script: "ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
     } else {
         error("Not a valid address: ${address}")
     }
