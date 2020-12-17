@@ -50,12 +50,12 @@ def isIPv6(String addr) {
 def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
     def cmd = ""
     def rt = ""
-    if ((sshUerName.trim() != "") && (remoteIp.trim() != "") ) {
+    if ((sshUerName.trim() != "") || (remoteIp.trim() != "") ) {
         cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host fqdn |grep -i -c 'has address' "
     } else{
         cmd = "host fqdn |grep -i -c 'has address'"
     }
-    rt = shCmd(cmd,"check if FQDN configured as ipv4 format")
+    rt = sh script: cmd,returnStdout: true
     print "rt type is ${rt.getClass()}"
     return rt == 1
 }
@@ -68,7 +68,7 @@ def isIPv6Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
     } else{
         cmd = "host fqdn |grep -i -c 'has address'"
     }
-    rt = shCmd(cmd,"check if FQDN configured as ipv6 format")
+    rt = sh script: cmd,returnStdout: true
     print "rt type is ${rt.getClass()}"
     return rt == 1
 }
