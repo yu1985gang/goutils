@@ -88,6 +88,7 @@ def getDefaultConf() {
 
 def validateHost(NE, CCTF) {
     //Ping NOM_BASE_DOMAIN, NE_HOST and CCTF_FQDN
+    echo "go into validateHost"
     def neHost = '0.0.0.0'
     if (NE['host']) {
         neHost = NE['host']
@@ -125,6 +126,7 @@ def pingAddress(String address, int account = 3) {
 }
 
 def pingAddressFromLocal(String address, int account = 3) {
+    echo "go into pingAddressFromLocal"
     def rc = null
     if ( Utils.isIPv4(address) || Util.isIPv4Fqdn(address)){
         rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping ipv4 address"
@@ -141,6 +143,7 @@ def pingAddressFromLocal(String address, int account = 3) {
 }
 
 def pingAddressFromLab(String address, int account = 3, String sshKey="", String sshUerName ="", String remoteIp = "") {
+    echo "go into pingAddressFromLab"
     def rc = null
     if ( Utils.isIPv4(address) || Util.isIPv4Fqdn(address,sshKey,sshUerName,remoteIp)){
         rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping ipv4 address"
