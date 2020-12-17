@@ -8,7 +8,6 @@ import groovy.transform.Field
 //@Field private LabInvertory = null
 @Field private edgeIp = "10.92.130.124"
 @Field private sshUser = "cloud-user"
-//@Field private NodePem = "${env.WORKSPACE}/configuration/node.pem"
 
 echo "Loaded class Precheck.groovy"
 
@@ -120,7 +119,6 @@ def validateHost(NE, CCTF) {
 
 def pingAddress(String address) {
     // execute ping command on tlocal server
-    echo "start ping $address in local Env"
     def rc = ""
     if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address)){
         rc = sh script: "ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
@@ -137,7 +135,6 @@ def pingAddress(String address) {
 
 def pingAddress(String address, String sshKey, String sshUer="cloud-user", String remoteIp) {
     //execute ping command on remote server, e.g, ping NE on NOM
-    echo "start ping $address from remote server"
     def rc = ""
     if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address,sshKey,sshUer,remoteIp)){
         rc = sh script: "ssh -i ${sshKey} ${sshUer}@${remoteIp} ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
