@@ -62,7 +62,7 @@ def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
     print "rt type is ${rt.getClass()}"
     print "rt value is ${rt}"
     try{
-        rc = Integer.parseInt(rt)
+        rt = Integer.parseInt(rt)
     }catch (NumberFormatException e) {
             // do nothing
         }
