@@ -58,8 +58,9 @@ def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
     }
     rt = sh script: cmd,returnStdout: true
     print "rt type is ${rt.getClass()}"
-    print Integer.parseInt(rt) == 1
-    return Integer.parseInt(rt) == 1
+    print "rt value is $rt"
+    print rt =="1"
+    return rt == "1"
 }
 
 def isIPv6Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
@@ -73,7 +74,8 @@ def isIPv6Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
     }
     rt = sh script: cmd,returnStdout: true
     print "rt type is ${rt.getClass()}"
-    return rt == 1
+    print rt =="1"
+    return rt == "1"
 }
 
 return this
