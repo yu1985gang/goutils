@@ -49,7 +49,7 @@ def isIPv6(String addr) {
 
 
 def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
-    if (isIPv6(addr) || isIPv4(addr){
+    if (isIPv6(addr) || isIPv4(addr)){
         return false
     }
     def cmd=""
@@ -73,7 +73,7 @@ def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
 }
 
 def isIPv6Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
-    if (isIPv6(addr) || isIPv4(addr){
+    if (isIPv6(addr) || isIPv4(addr)){
         return false
     }
     echo "===> isIPv6Fqdn"
