@@ -48,7 +48,6 @@ def isIPv6(String addr) {
 }
 
 def isIPv4Fqdn(String fqdn){
-    //def dnsNotCfg = sh script: "host ${fqdn} |grep -i 'not found'",returnStatus:true
     def dnsIPv4Cfg = sh script: "host ${fqdn} |grep -i 'has address'",returnStatus:true
     if (isIPv4(fqdn) || isIPv6(fqdn)){
         return false
@@ -58,8 +57,6 @@ def isIPv4Fqdn(String fqdn){
 
 
 def isIPv4Fqdn(String fqdn,String sshKey, String sshUerName, String remoteIp){
-
-    //def dnsNotCfg = sh script: ("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'not found'"),returnStatus:true
     def dnsIPv4Cfg = sh script:"ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'has address'",returnStatus:true
     if (isIPv4(fqdn) || isIPv6(fqdn)){
         return false
@@ -69,7 +66,6 @@ def isIPv4Fqdn(String fqdn,String sshKey, String sshUerName, String remoteIp){
 
 
 def isIPv6Fqdn(String fqdn){
-    //def dnsNotCfg = sh script: "host ${fqdn} |grep -i 'not found'",returnStatus:true
     def dnsIPv6Cfg = sh script: "host ${fqdn} |grep -i 'has IPv6 Ipaddress'",returnStatus:true
     if (isIPv4(fqdn) || isIPv6(fqdn)){
         return false
@@ -78,7 +74,6 @@ def isIPv6Fqdn(String fqdn){
 }
 
 def isIPv6Fqdn(String fqdn,String sshKey, String sshUerName, String remoteIp){
-    //def dnsNotCfg = sh script: ("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'not found'"),returnStatus:true
     def dnsIPv6Cfg = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'has IPv6 address'",returnStatus:true
     if (isIPv4(fqdn) || isIPv6(fqdn)){
         return false
