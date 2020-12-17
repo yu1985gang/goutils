@@ -47,61 +47,76 @@ def isIPv6(String addr) {
     return addr.contains(":")
 }
 
-
-def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
-    if (isIPv6(fqdn) || isIPv4(fqdn)){
+def isIPv4Fqdn(String fqdn){
+    def dnsNotCfg = shCmd("host ${fqdn} |grep -i -c 'not found'").trim().replaceAll("(\\r|\\n)", "")
+    def dnsIPv4Cfg = shCmd("host ${fqdn} |grep -i -c 'has address'").trim().replaceAll("(\\r|\\n)", "")
+    try{
+        dnsNotCfg = Integer.parseInt(dnsNotCfg)
+        dnsIPv4Cfg = Integer.parseInt(dnsIPv4Cfg)
+    }catch(NumberFormatException e){
+        //do nothing
+    }
+    if (isIPv6(fqdn) || isIPv4(fqdn) || dnsNotCfg == 1){
         return false
-    }
-    echo "isIPv4Fqdn:$fqdn"
-    def cmd=""
-    def rt=""
-    if ((sshUerName.trim() == "") || (remoteIp.trim() == "") ) {
-        cmd = "host ${fqdn} |grep -i -c 'has address'"
-    } else{
-        cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'has address' "
-    }
-    try{
-        rt = shCmd(cmd).trim().replaceAll("(\\r|\\n)", "")
-        print "rt type is ${rt.getClass()}"
-        print "rt value is ${rt}"
-    }catch(Exception e){
-        error("FQDN ${address} not found")
-    }
+    } else if (dnsIPv4Cfg == 1){
+        return true
+    } 
+    return false
     
-    try{
-        rt = Integer.parseInt(rt)
-    }catch (NumberFormatException e) {
-            // do nothing
-        }
-    return rt == 1
 }
 
-def isIPv6Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remoteIp = ""){
-    if (isIPv6(fqdn) || isIPv4(fqdn)){
+
+def isIPv4Fqdn(String fqdn,String sshKey="", String sshUerName ="", String remoteIp = ""){
+
+    def dnsNotCfg = shCmd("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'not found'").trim().replaceAll("(\\r|\\n)", "")
+    def dnsIPv4Cfg = shCmd("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'has address'").trim().replaceAll("(\\r|\\n)", "")
+    try{
+        dnsNotCfg = Integer.parseInt(dnsNotCfg)
+        dnsIPv4Cfg = Integer.parseInt(dnsIPv4Cfg)
+    }catch(NumberFormatException e){
+        //do nothing
+    }
+    if (isIPv6(fqdn) || isIPv4(fqdn) || dnsNotCfg == 1){
         return false
+    } else if (dnsIPv4Cfg == 1){
+        return true
     }
-    echo "isIPv6Fqdn:$fqdn"
-    def cmd = ""
-    def rt=""
-    if ((sshUerName.trim() == "") && (remoteIp.trim() == "") ) {
-        cmd = "host ${fqdn} |grep -i -c 'has address'"
-    } else{
-        cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'has IPv6 address' "
-    }
-    
+    return false
+}
+
+
+def isIPv6Fqdn(String fqdn){
+    def dnsNotCfg = shCmd("host ${fqdn} |grep -i -c 'not found'").trim().replaceAll("(\\r|\\n)", "")
+    def dnsIPv6Cfg = shCmd("host ${fqdn} |grep -i -c 'has address'").trim().replaceAll("(\\r|\\n)", "")
     try{
-        rt = shCmd(cmd).trim().replaceAll("(\\r|\\n)", "")
-        print "rt type is ${rt.getClass()}"
-        print "rt value is ${rt}"
-    }catch(Exception e){
-        error("FQDN ${address} not found")
+        dnsNotCfg = Integer.parseInt(dnsNotCfg)
+        dnsIPv6Cfg = Integer.parseInt(dnsIPv6Cfg)
+    }catch(NumberFormatException e){
+        //do nothing
     }
+    if (isIPv6(fqdn) || isIPv4(fqdn) || dnsNotCfg == 1){
+        return false
+    } else if (dnsIPv6Cfg == 1){
+        return true
+    }
+    return false
+}
+
+def isIPv6Fqdn(String fqdn,String sshKey="", String sshUerName ="", String remoteIp = ""){
+    def dnsNotCfg = shCmd("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'not found'").trim().replaceAll("(\\r|\\n)", "")
+    def dnsIPv6Cfg = shCmd("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'has address'").trim().replaceAll("(\\r|\\n)", "")
     try{
-        rt = Integer.parseInt(rt)
-    }catch (NumberFormatException e){
-        // do nothing
+        dnsNotCfg = Integer.parseInt(dnsNotCfg)
+        dnsIPv6Cfg = Integer.parseInt(dnsIPv6Cfg)
+    }catch(NumberFormatException e){
+        //do nothing
     }
-    return rt == 1
+    if (isIPv6(fqdn) || isIPv4(fqdn) || dnsNotCfg == 1){
+        return false
+    } else if (dnsIPv6Cfg == 1){
+        return true
+    }
+    return false
 }
 
 return this

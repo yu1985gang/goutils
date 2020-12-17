@@ -97,20 +97,20 @@ def validateHost(NE, CCTF) {
         neHost = selectedNE.FQDN
         echo "Use the ne host from configuration: NE_HOST=${neHost}"
     }
-    def addressMapCheckedInLocal = ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "CCTF_FQDN": CCTF.FQDN]
-    addressMapCheckedInLocal.each { k, v ->
+    def addressMapCheckedFromLocal = ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "CCTF_FQDN": CCTF.FQDN]
+    addressMapCheckedFromLocal.each { k, v ->
         if (v != null && "${v}".trim() != "") {
-            pingAddress(v)
+            pingAddressFromLocal(v)
             echo "Ping ${k} successfully"
         } else {
             error("Invalid conf, ${k}=${v}")
         }
     }
 
-    def addressMapCheckedRemotely = ["NE_HOST": neHost]
-    addressMapCheckedRemotely.each { k, v ->
+    def addressMapCheckedFromLab = ["NE_HOST": neHost]
+    addressMapCheckedFromLab.each { k, v ->
         if (v != null && "${v}".trim() != "") {
-            pingAddress(v,NodePem,sshUser,edgeIp)
+            pingAddressFromLab(v,NodePem,sshUser,edgeIp)
             echo "Ping ${k} successfully"
         } else {
             error("Invalid conf, ${k}=${v}")
@@ -118,9 +118,8 @@ def validateHost(NE, CCTF) {
     }
 }
 
-def pingAddress(String address) {
-    // ping address in test local ENV
-    echo "start ping $address in local Env"
+def pingAddressFromLocal(String address) {
+    echo "start ping $address in pingAddressFromLocal"
     def rc = ""
     if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address)){
         rc = sh script: "ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
@@ -133,15 +132,16 @@ def pingAddress(String address) {
     if (rc != 0) {
         error("ping address ${address} timeout, please check")
     }
+
 }
 
-def pingAddress(String address, String sshKey="", String sshUer ="", String remoteIp = "") {
-    //ping address from remote server
-    echo "start ping $address from remote server"
-    Utils.shCmd("chmod 400 ${NodePem}","Set node.pem as read-only permission")
+def pingAddressFromLab(String address, String sshKey="", String sshUer ="", String remoteIp = "") {
+    echo "start ping $address in pingAddressFromLab"
+    echo "start ping addess ${address} in pingAddressFromLab"
+    Utils.shCmd("chmod 400 ${NodePem}","Set node.pme read-only permission")
     def rc = ""
     if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address,sshKey,sshUer,remoteIp)){
-        rc = sh script: "ssh -i ${sshKey} ${sshUer}@${remoteIp} ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
+        rc = sh script: "ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
     }else if (Utils.isIPv6(address) || Utils.isIPv6Fqdn(address,sshKey,sshUer,remoteIp)){
         def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
         rc = sh script: "ssh -i ${sshKey} ${sshUer}@${remoteIp} ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
