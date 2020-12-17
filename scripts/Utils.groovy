@@ -59,7 +59,7 @@ def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
     rt = sh script: cmd,returnStdout: true
     print "rt type is ${rt.getClass()}"
     print "rt value is << $rt >>"
-    rt = Integer.parseInt(rc)
+    rt = Integer.parseInt(rt)
     print "rt type is ${rt.getClass()}"
     print "rt value is << $rt >>"
     print rt == 1
