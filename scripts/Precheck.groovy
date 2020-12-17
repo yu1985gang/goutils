@@ -110,7 +110,7 @@ def validateHost(NE, CCTF) {
     def addressMapCheckedRemotely = ["NE_HOST": neHost]
     addressMapCheckedRemotely.each { k, v ->
         if (v != null && "${v}".trim() != "") {
-            pingAddress(v,NodePem,sshUser,edgeIp)
+            pingAddress(v,NodePem,Conf.NOM.NOM_SSH_USERNAME,Conf.NOM.NOM_EDGE_NODE_HOST)
             echo "Ping ${k} successfully"
         } else {
             error("Invalid conf, ${k}=${v}")
@@ -119,7 +119,7 @@ def validateHost(NE, CCTF) {
 }
 
 def pingAddress(String address) {
-    // ping address in test local ENV
+    // execute ping command on tlocal server
     echo "start ping $address in local Env"
     def rc = ""
     if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address)){
@@ -136,7 +136,7 @@ def pingAddress(String address) {
 }
 
 def pingAddress(String address, String sshKey, String sshUer, String remoteIp) {
-    //ping address from remote server
+    //execute ping command on remote server, e.g, ping NE on NOM
     echo "start ping $address from remote server"
     Utils.shCmd("chmod 400 ${NodePem}","Set node.pem as read-only permission")
     def rc = ""

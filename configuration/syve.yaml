@@ -3,6 +3,8 @@ NOM:
     NOM_PASSWORD: Nextgen#123
     NOM_BASE_DOMAIN: neo0033.dyn.nesc.nokia.net
     NOM_REALM_NAME: NEO
+    NOM_EDGE_NODE_HOST: 10.92.130.124
+    NOM_SSH_USERNAME: cloud-user
 CCTF:
   FQDN: neo0033vip.netact.nsn-rdnet.net
   USER_NAME: admin
