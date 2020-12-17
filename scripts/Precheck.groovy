@@ -97,8 +97,8 @@ def validateHost(NE, CCTF) {
         neHost = selectedNE.FQDN
         echo "Use the ne host from configuration: NE_HOST=${neHost}"
     }
-    def addressMap = ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "CCTF_FQDN": CCTF.FQDN]
-    addressMap.each { k, v ->
+    def addressMapCheckedFromLocal = ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "CCTF_FQDN": CCTF.FQDN]
+    addressMapCheckedFromLocal.each { k, v ->
         if (v != null && "${v}".trim() != "") {
             pingAddressFromLocal(v)
             echo "Ping ${k} successfully"
@@ -107,8 +107,8 @@ def validateHost(NE, CCTF) {
         }
     }
 
-    def neMap = ["NE_HOST": neHost]
-    neMap.each { k, v ->
+    def addressMapCheckedFromLab = ["NE_HOST": neHost]
+    addressMapCheckedFromLab.each { k, v ->
         if (v != null && "${v}".trim() != "") {
             pingAddressFromLab(v,NodePem,sshUser,edgeIp)
             echo "Ping ${k} successfully"

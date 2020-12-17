@@ -55,22 +55,19 @@ def isIPv4Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
     if (isNotFqdn(fqdn)){
         return false
     }
-    echo "===> isIPv4Fqdn"
-    def cmd = ""
-    def rt = ""
     if ((sshUerName.trim() == "") || (remoteIp.trim() == "") ) {
         cmd = "host ${fqdn} |grep -i -c 'has address'"
     } else{
         cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'has address' "
     }
-    rt = sh script: cmd,returnStdout: true
-    rt = rt.trim().replaceAll("(\\r|\\n)", "")
-    print "rt type is ${rt.getClass()}"
-    print "rt value is << $rt >>"
-    rt = Integer.parseInt(rt)
-    print "rt type is ${rt.getClass()}"
-    print "rt value is << $rt >>"
-    print rt == 1
+    def rt = shCmd(cmd).trim().replaceAll("(\\r|\\n)", "")
+    try{
+        rc = Integer.parseInt(rt)
+    }catch (NumberFormatException e) {
+            // do nothing
+        }
+    //rt = sh script: cmd,returnStdout: true
+    //rt = rt.trim().replaceAll("(\\r|\\n)", "")
     return rt == 1
 }
 
@@ -87,14 +84,14 @@ def isIPv6Fqdn(String fqdn, String sshKey="", String sshUerName ="", String remo
         cmd = "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'has IPv6 address' "
         
     }
-    rt = sh script: cmd,returnStdout: true
-    rt = rt.trim().replaceAll("(\\r|\\n)", "")
-    print "rt type is ${rt.getClass()}"
-    print "rt value is << $rt >>"
-    rt = Integer.parseInt(rt)
-    print "rt type is ${rt.getClass()}"
-    print "rt value is << $rt >>"
-    print rt == 1
+    def rt = shCmd(cmd).trim().replaceAll("(\\r|\\n)", "")
+    //rt = sh script: cmd,returnStdout: true
+    //rt = rt.trim().replaceAll("(\\r|\\n)", "")
+    try{
+        rt = Integer.parseInt(rt)
+    }catch (NumberFormatException e){
+        // do nothing
+    }
     return rt == 1
 }
 
