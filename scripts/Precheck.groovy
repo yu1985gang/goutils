@@ -133,7 +133,7 @@ def pingAddressFromLocal(String address, int account = 3) {
         echo "===> ipv4 address or ipv4 fqdn"
         rc = sh script: "ping -c ${account} ${address}", returnStatus: true, label: "Ping ipv4 address"
     }else if (Utils.isIPv6(address) || Utils.isIPv6Fqdn(address)){
-        echo "===> ipv4 address or ipv4 fqdn"
+        echo "===> ipv6 address or ipv6 fqdn"
         def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev")
         rc = sh script: "ping6 -I ${intf}-c ${account} ${address}", returnStatus: true, label: "Ping ipv6 address"
     } else {
