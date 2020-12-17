@@ -154,7 +154,7 @@ def pingAddress(String address, String sshKey, String sshUer="cloud-user", Strin
 
 def genSshKeyFile(){
     Utils.shCmd("rm -rf ${env.WORKSPACE}/node.pem")
-    writeFile file: '${env.WORKSPACE}/node.pem', text: "${Conf.NOM[0].NOM_SSH_KEY_FILE}"
+    writeFile file: "${env.WORKSPACE}/node.pem", text: "${Conf.NOM[0].NOM_SSH_KEY_FILE}"
     if(!fileExists("${env.WORKSPACE}/node.pem")){
         error("Generate ssh key file failed")
     }else{
