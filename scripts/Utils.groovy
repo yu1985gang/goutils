@@ -66,7 +66,7 @@ def isIPv4Fqdn(String fqdn){
 }
 
 
-def isIPv4Fqdn(String fqdn,String sshKey="", String sshUerName ="", String remoteIp = ""){
+def isIPv4Fqdn(String fqdn,String sshKey, String sshUerName, String remoteIp){
 
     def dnsNotCfg = shCmd("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'not found'").trim().replaceAll("(\\r|\\n)", "")
     def dnsIPv4Cfg = shCmd("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'has address'").trim().replaceAll("(\\r|\\n)", "")
@@ -102,7 +102,7 @@ def isIPv6Fqdn(String fqdn){
     return false
 }
 
-def isIPv6Fqdn(String fqdn,String sshKey="", String sshUerName ="", String remoteIp = ""){
+def isIPv6Fqdn(String fqdn,String sshKey, String sshUerName, String remoteIp){
     def dnsNotCfg = shCmd("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'not found'").trim().replaceAll("(\\r|\\n)", "")
     def dnsIPv6Cfg = shCmd("ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i -c 'has address'").trim().replaceAll("(\\r|\\n)", "")
     try{
