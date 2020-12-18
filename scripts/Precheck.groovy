@@ -135,16 +135,26 @@ def pingAddress(String address) {
 //     }
 // }
 
-def pingNE(String address, String sshKey, String sshUer="cloud-user", String remoteIp) {
+def pingNE(String address, String sshKey, String sshUerName, String remoteIp) {
     //login in and ping address in remote server, e.g, ping NE_HOST in NOM
     def res = ""
-    if ( Utils.isIPv4(address) || isIPv4DNS(address,sshKey,sshUer,remoteIp)){
+    def isIPv4Addr = Utils.isIPv4(address)
+    def isIPv6Addr = Utils.isIPv6(address)
+    def isIPv4Dns = isDnsIPv4(address,sshKey,sshUer,remoteIp)
+    def isIPv6Dns = isDnsIPv6(address,sshKey,sshUer,remoteIp)
+
+    if (!isIPv4Addr || !isIPv6Addr || !isIPv4Dns || !isIPv6Dns){
+        error("Address is neigther IP or FQDN: ${address}")
+    }
+
+    if (isIPv4Addr || isIPv4Dns){
         res = sh script: "ssh -i ${sshKey} ${sshUer}@${remoteIp} ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
-    }else if (Utils.isIPv6(address) || isIPv6DNS(address,sshKey,sshUer,remoteIp)){
+    }
+
+    if (isIPv6Addr || isIPv6Dns ){
         def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
         res = sh script: "ssh -i ${sshKey} ${sshUer}@${remoteIp} ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
-    } else {
-        error("Address is neigther IP or FQDN: ${address}")
+
     }
     if (res != 0) {
         error("ping address ${address} timeout, please check")
@@ -171,7 +181,7 @@ def genSshKeyFile(){
 // }
 
 
-def NEDNSinIPv4(String fqdn,String sshKey, String sshUerName, String remoteIp){
+def isDnsIPv4(String fqdn,String sshKey, String sshUerName, String remoteIp){
     def dnsIPv4Cfg = sh script:"ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'has address'",returnStatus:true
     if (Utils.isIPv4(fqdn) || Utils.isIPv6(fqdn)){
         return false
@@ -188,7 +198,7 @@ def NEDNSinIPv4(String fqdn,String sshKey, String sshUerName, String remoteIp){
 //     return dnsIPv6Cfg == 0
 // }
 
-def isIPv6DNS(String fqdn,String sshKey, String sshUerName, String remoteIp){
+def isDnsIPv6(String fqdn,String sshKey, String sshUerName, String remoteIp){
     def dnsIPv6Cfg = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'has IPv6 address'",returnStatus:true
     if (Utils.isIPv4(fqdn) || Utils.isIPv6(fqdn)){
         return false
