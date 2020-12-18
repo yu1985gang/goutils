@@ -156,7 +156,7 @@ def genSshKeyFile(){
 
 def isIPv4DNS(String fqdn){
     def dnsIPv4Cfg = sh script: "host ${fqdn} |grep -i 'has address'",returnStatus:true
-    if (isIPv4(fqdn) || isIPv6(fqdn)){
+    if (Utils.isIPv4(fqdn) || Utils.isIPv6(fqdn)){
         return false
     }
     return dnsIPv4Cfg == 0 
@@ -165,7 +165,7 @@ def isIPv4DNS(String fqdn){
 
 def isIPv4DNS(String fqdn,String sshKey, String sshUerName, String remoteIp){
     def dnsIPv4Cfg = sh script:"ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'has address'",returnStatus:true
-    if (isIPv4(fqdn) || isIPv6(fqdn)){
+    if (Utils.isIPv4(fqdn) || Utils.isIPv6(fqdn)){
         return false
     }
     return dnsIPv4Cfg == 0
@@ -174,7 +174,7 @@ def isIPv4DNS(String fqdn,String sshKey, String sshUerName, String remoteIp){
 
 def isIPv6DNS(String fqdn){
     def dnsIPv6Cfg = sh script: "host ${fqdn} |grep -i 'has IPv6 Ipaddress'",returnStatus:true
-    if (isIPv4(fqdn) || isIPv6(fqdn)){
+    if (Utils.isIPv4(fqdn) || Utils.isIPv6(fqdn)){
         return false
     }
     return dnsIPv6Cfg == 0
@@ -182,7 +182,7 @@ def isIPv6DNS(String fqdn){
 
 def isIPv6DNS(String fqdn,String sshKey, String sshUerName, String remoteIp){
     def dnsIPv6Cfg = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'has IPv6 address'",returnStatus:true
-    if (isIPv4(fqdn) || isIPv6(fqdn)){
+    if (Utils.isIPv4(fqdn) || Utils.isIPv6(fqdn)){
         return false
     }
     return dnsIPv6Cfg == 0
