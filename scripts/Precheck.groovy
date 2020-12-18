@@ -103,7 +103,7 @@ def validateHost(NE, CCTF) {
     def loginAndPingAddrData = ["NE_HOST": neHost]
     loginAndPingAddrData.each { k, v ->
         if (v != null && "${v}".trim() != "") {
-            pingAddress(v,genSshKeyFile(),Conf.NOM[0].NOM_SSH_USERNAME,Conf.NOM[0].NOM_EDGE_NODE_HOST)
+            loginAndPingAddr(v,genSshKeyFile(),Conf.NOM[0].NOM_SSH_USERNAME,Conf.NOM[0].NOM_EDGE_NODE_HOST)
             echo "Ping ${k} successfully"
         } else {
             error("Invalid conf, ${k}=${v}")
@@ -112,7 +112,7 @@ def validateHost(NE, CCTF) {
 }
 
 def pingAddress(String address) {
-    // ping address on local server
+    // execute ping in local server
     def rc = ""
     if ( Utils.isIPv4(address) || isIPv4DNS(address)){
         rc = sh script: "ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
