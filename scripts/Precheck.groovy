@@ -100,7 +100,7 @@ def validateHost(NE,NOM,CCTF) {
     //ping NOM_BASE_DOMAIN and CCTF
     ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "CCTF_FQDN": CCTF.FQDN].each { _, v ->
         pingAddress(v)
-        echo "Ping ${V} successfully"
+        echo "Ping ${v} successfully"
     }
 
     //ping NE IP or DNS in NOM
