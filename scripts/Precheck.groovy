@@ -137,27 +137,27 @@ def pingAddress(String address) {
 
 def pingNE(String address, String sshKey, String sshUerName, String remoteIp) {
     //login in and ping address in remote server, e.g, ping NE_HOST in NOM
-    def res = ""
     def isIPv4Addr = Utils.isIPv4(address)
     def isIPv6Addr = Utils.isIPv6(address)
     def isIPv4Dns = isDnsIPv4(address,sshKey,sshUerName,remoteIp)
     def isIPv6Dns = isDnsIPv6(address,sshKey,sshUerName,remoteIp)
+    def pingIPv4Res,pingIPv6Res
 
-    if (!isIPv4Addr || !isIPv6Addr || !isIPv4Dns || !isIPv6Dns){
-        error("Address is neigther IP or FQDN: ${address}")
+    if (!isIPv4Addr && !isIPv6Addr && !isIPv4Dns && !isIPv6Dns){
+        error("NE_HOST is neigther a IP address nor configured as DNS: ${address}")
     }
 
     if (isIPv4Addr || isIPv4Dns){
-        res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
+        pingIPv4Res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
     }
 
     if (isIPv6Addr || isIPv6Dns ){
-        def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
-        res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
+        intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
+        pingIPv6Res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
 
     }
-    if (res != 0) {
-        error("ping address ${address} timeout, please check")
+    if (pingIPv4Res != 0 || pingIPv6Res != 0) {
+        error("Ping NE address ${address} timeout, please check")
     }
 }
 
