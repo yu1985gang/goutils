@@ -43,8 +43,8 @@ def preCheck(NE_SW_ID, NE_MO_CLASS_ID, NE_DIST_NAME, NE_HOST, NE_PORT, NE_USER_N
     (Conf, NOM, CCTF) = Precheck.getDefaultConf()
     
     (INTEGRATION_PLAN_NAME, INTEGRATION_PLAN) = Precheck.validateAndGenPlan(NE, Precheck.createParamOptionalMap(CUSTOM_INTEGRATION_PARAMS), Conf, FP_PACKAGE_LINK, NE_CERTIFICATES)
-    Precheck.validateHost(NE, CCTF)
-    Precheck.checkCCTF(CCTF)
+    Precheck.validateHost(NE,NOM,CCTF)
+    Precheck.CCTFHealth(CCTF)
     
     NE_TC = ['NE_TC_PACKAGE_URL': NE_TC_PACKAGE_URL, 'NE_TC_DOCKER_IMAGE_URL': NE_TC_DOCKER_IMAGE_URL, 'NE_TC_PARAMETERS': NE_TC_PARAMETERS]
     echo 'Use the following parameters to SyVe:'
@@ -52,6 +52,9 @@ def preCheck(NE_SW_ID, NE_MO_CLASS_ID, NE_DIST_NAME, NE_HOST, NE_PORT, NE_USER_N
     echo "NOM.NOM_BASE_DOMAIN: ${NOM.NOM_BASE_DOMAIN}"
     echo "NOM.NOM_REALM_NAME: ${NOM.NOM_REALM_NAME}"
     echo "NOM.NOM_RELEASE: ${NOM.NOM_RELEASE}"
+    echo "NOM.NOM_EDGE_NODE_HOST: ${NOM.NOM_EDGE_NODE_HOST}"
+    echo "NOM.NOM_SSH_USERNAME: ${NOM.NOM_SSH_USERNAME}"
+    echo "NOM.NOM_EDGE_NODE_HOST: ${NOM.NOM_SSH_KEY_FILE}"
     echo "CCTF.FQDN: ${CCTF.FQDN}"
     echo "COMMON_TC_PACKAGE_URL: ${Conf.COMMON_TC_PACKAGE_URL}"
     echo "NE_TC: ${NE_TC}"
