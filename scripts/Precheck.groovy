@@ -90,8 +90,8 @@ def validateHost(NE, CCTF) {
         echo "Use the ne host from configuration: NE_HOST=${neHost}"
     }
 
-    def addressMapCheckedInLocal = ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "CCTF_FQDN": CCTF.FQDN]
-    addressMapCheckedInLocal.each { k, v ->
+    def pingAddressData = ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "CCTF_FQDN": CCTF.FQDN]
+    pingAddressData.each { k, v ->
         if (v != null && "${v}".trim() != "") {
             pingAddress(v)
             echo "Ping ${k} successfully"
@@ -100,8 +100,8 @@ def validateHost(NE, CCTF) {
         }
     }
 
-    def addressMapCheckedRemotely = ["NE_HOST": neHost]
-    addressMapCheckedRemotely.each { k, v ->
+    def loginAndPingAddrData = ["NE_HOST": neHost]
+    loginAndPingAddrData.each { k, v ->
         if (v != null && "${v}".trim() != "") {
             pingAddress(v,genSshKeyFile(),Conf.NOM[0].NOM_SSH_USERNAME,Conf.NOM[0].NOM_EDGE_NODE_HOST)
             echo "Ping ${k} successfully"
@@ -114,9 +114,9 @@ def validateHost(NE, CCTF) {
 def pingAddress(String address) {
     // ping address on local server
     def rc = ""
-    if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address)){
+    if ( Utils.isIPv4(address) || isIPv4DNS(address)){
         rc = sh script: "ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
-    }else if (Utils.isIPv6(address) || Utils.isIPv6Fqdn(address)){
+    }else if (Utils.isIPv6(address) || isIPv6DNS(address)){
         def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
         rc = sh script: "ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
     } else {
@@ -127,12 +127,12 @@ def pingAddress(String address) {
     }
 }
 
-def pingAddress(String address, String sshKey, String sshUer="cloud-user", String remoteIp) {
-    //ping address in remote server, e.g, ping NE_HOST in NOM
+def loginAndPingAddr(String address, String sshKey, String sshUer="cloud-user", String remoteIp) {
+    //login in and ping address in remote server, e.g, ping NE_HOST in NOM
     def rc = ""
-    if ( Utils.isIPv4(address) || Utils.isIPv4Fqdn(address,sshKey,sshUer,remoteIp)){
+    if ( Utils.isIPv4(address) || isIPv4DNS(address,sshKey,sshUer,remoteIp)){
         rc = sh script: "ssh -i ${sshKey} ${sshUer}@${remoteIp} ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
-    }else if (Utils.isIPv6(address) || Utils.isIPv6Fqdn(address,sshKey,sshUer,remoteIp)){
+    }else if (Utils.isIPv6(address) || isIPv6DNS(address,sshKey,sshUer,remoteIp)){
         def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
         rc = sh script: "ssh -i ${sshKey} ${sshUer}@${remoteIp} ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
     } else {
@@ -152,6 +152,40 @@ def genSshKeyFile(){
         Utils.shCmd("chmod 400 ${env.WORKSPACE}/node.pem","Set ssh key file as read-only permission")
         return "${env.WORKSPACE}/node.pem"
     }
+}
+
+def isIPv4DNS(String fqdn){
+    def dnsIPv4Cfg = sh script: "host ${fqdn} |grep -i 'has address'",returnStatus:true
+    if (isIPv4(fqdn) || isIPv6(fqdn)){
+        return false
+    }
+    return dnsIPv4Cfg == 0 
+}
+
+
+def isIPv4DNS(String fqdn,String sshKey, String sshUerName, String remoteIp){
+    def dnsIPv4Cfg = sh script:"ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'has address'",returnStatus:true
+    if (isIPv4(fqdn) || isIPv6(fqdn)){
+        return false
+    }
+    return dnsIPv4Cfg == 0
+}
+
+
+def isIPv6DNS(String fqdn){
+    def dnsIPv6Cfg = sh script: "host ${fqdn} |grep -i 'has IPv6 Ipaddress'",returnStatus:true
+    if (isIPv4(fqdn) || isIPv6(fqdn)){
+        return false
+    }
+    return dnsIPv6Cfg == 0
+}
+
+def isIPv6DNS(String fqdn,String sshKey, String sshUerName, String remoteIp){
+    def dnsIPv6Cfg = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'has IPv6 address'",returnStatus:true
+    if (isIPv4(fqdn) || isIPv6(fqdn)){
+        return false
+    }
+    return dnsIPv6Cfg == 0
 }
 
 def createParamOptionalMap(String customIntegrationParams) {
