@@ -140,20 +140,20 @@ def pingNE(String address, String sshKey, String sshUerName, String remoteIp) {
     def res = ""
     def isIPv4Addr = Utils.isIPv4(address)
     def isIPv6Addr = Utils.isIPv6(address)
-    def isIPv4Dns = isDnsIPv4(address,sshKey,sshUer,remoteIp)
-    def isIPv6Dns = isDnsIPv6(address,sshKey,sshUer,remoteIp)
+    def isIPv4Dns = isDnsIPv4(address,sshKey,sshUerName,remoteIp)
+    def isIPv6Dns = isDnsIPv6(address,sshKey,sshUerName,remoteIp)
 
     if (!isIPv4Addr || !isIPv6Addr || !isIPv4Dns || !isIPv6Dns){
         error("Address is neigther IP or FQDN: ${address}")
     }
 
     if (isIPv4Addr || isIPv4Dns){
-        res = sh script: "ssh -i ${sshKey} ${sshUer}@${remoteIp} ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
+        res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
     }
 
     if (isIPv6Addr || isIPv6Dns ){
         def intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
-        res = sh script: "ssh -i ${sshKey} ${sshUer}@${remoteIp} ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
+        res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
 
     }
     if (res != 0) {
