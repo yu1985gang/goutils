@@ -105,7 +105,7 @@ def validateHost(NE,NOM,CCTF) {
 
     //ping NE IP or DNS in NOM
     ["NE_HOST": neHost].each { k, v ->
-        pingNE(v,genSshKeyFile(),NOM.NOM_SSH_USERNAME,NOM.NOM_EDGE_NODE_HOST)
+        pingNE(v,genSshKeyFile("node.pem"),NOM.NOM_SSH_USERNAME,NOM.NOM_EDGE_NODE_HOST)
         echo "Ping ${k} successfully"
     }
 }
@@ -141,25 +141,24 @@ def pingNE(String address, String sshKey, String sshUerName, String remoteIp) {
     def isIPv6Addr = Utils.isIPv6(address)
     def isIPv4Dns = isDnsIPv4(address,sshKey,sshUerName,remoteIp)
     def isIPv6Dns = isDnsIPv6(address,sshKey,sshUerName,remoteIp)
-    echo "isIPv4Addr is $isIPv4Addr, isIPv6Addr is $isIPv6Addr, isIPv4Dns is $isIPv4Dns, isIPv6Dns is $isIPv6Dns"
     def pingIPv4Res,pingIPv6Res
 
     if (!isIPv4Addr && !isIPv6Addr && !isIPv4Dns && !isIPv6Dns){
-        error("NE_HOST is neigther a IP address nor configured as DNS: ${address}")
+        error("NE_HOST is neigther IP nor DNS: ${address}")
     }
 
     if (isIPv4Addr || isIPv4Dns){
         pingIPv4Res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
-        echo "pingIPv4Res is $pingIPv4Res"
         if(pingIPv4Res!=0){
             error("Ping NE address ${address} timeout, please check")
         }
     }
 
     if (isIPv6Addr || isIPv6Dns){
-        intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
-        pingIPv6Res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
-        echo "pingIPv6Res is $pingIPv6Res"
+        //intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
+        routeIface = Util.shCmd("ssh -i ${sshKey} ${sshUerName}@${remoteIp} netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev")
+        echo "******************routeIface is $routeIface****************************"
+        pingIPv6Res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping6 -I ${routeIface} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
         if(pingIPv6Res!=0){
             error("Ping NE address ${address} timeout, please check")
         }
@@ -167,14 +166,14 @@ def pingNE(String address, String sshKey, String sshUerName, String remoteIp) {
     }
 }
 
-def genSshKeyFile(){
-    Utils.shCmd("rm -rf ${env.WORKSPACE}/node.pem")
-    writeFile file: "${env.WORKSPACE}/node.pem", text: "${Conf.NOM[0].NOM_SSH_KEY_FILE}"
-    if(!fileExists("${env.WORKSPACE}/node.pem")){
+def genSshKeyFile(String fileName){
+    Utils.shCmd("rm -rf node.pem")
+    writeFile file: "node.pem", text: "${Conf.NOM[0].NOM_SSH_KEY_FILE}"
+    if(!fileExists("node.pem")){
         error("Generate ssh key file failed")
     }else{
-        Utils.shCmd("chmod 400 ${env.WORKSPACE}/node.pem","Set ssh key file as read-only permission")
-        return "${env.WORKSPACE}/node.pem"
+        Utils.shCmd("chmod 400 node.pem","Set ssh key file as read-only permission")
+        return fileName
     }
 }
 
