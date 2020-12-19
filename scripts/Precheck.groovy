@@ -156,7 +156,7 @@ def pingNE(String address, String sshKey, String sshUerName, String remoteIp) {
 
     if (isIPv6Addr || isIPv6Dns){
         //intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
-        routeIface = Util.shCmd("ssh -i ${sshKey} ${sshUerName}@${remoteIp} netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev")
+        routeIface = Utils.shCmd("ssh -i ${sshKey} ${sshUerName}@${remoteIp} netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev")
         echo "******************routeIface is $routeIface****************************"
         pingIPv6Res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping6 -I ${routeIface} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
         if(pingIPv6Res!=0){
