@@ -105,8 +105,15 @@ def validateHost(NE,NOM,CCTF) {
 
     //ping NE (IP or DNS) in NOM
     ["NE_HOST": neHost].each { k, v ->
-        pingNE(v,genSshKeyFile("node.pem"),NOM.NOM_SSH_USERNAME,NOM.NOM_EDGE_NODE_HOST)
-        echo "Ping ${k} successfully"
+        def sshKey = "node.pem"
+        try{
+            pingNE(v,genSshKey(sshKey),NOM.NOM_SSH_USERNAME,NOM.NOM_EDGE_NODE_HOST)
+            echo "Ping ${k} successfully"
+        }finally{
+            delSshKey(sshKey)
+        }
+        //pingNE(v,genSshKey("node.pem"),NOM.NOM_SSH_USERNAME,NOM.NOM_EDGE_NODE_HOST)
+        //echo "Ping ${k} successfully"
     }
 }
 
@@ -146,15 +153,21 @@ def pingNE(String address, String sshKey, String sshUerName, String remoteIp) {
     }
 }
 
-def genSshKeyFile(String fileName){
-    Utils.shCmd("rm -rf node.pem")
-    writeFile file: "node.pem", text: "${Conf.NOM[0].NOM_SSH_KEY_FILE}"
-    if(!fileExists("node.pem")){
+def genSshKey(String sshKey){
+    Utils.shCmd("rm -rf ${sshKey}")
+    writeFile file: "${sshKey}", text: "${Conf.NOM[0].NOM_SSH_KEY_FILE}"
+    if(!fileExists("${sshKey}")){
         error("Generate ssh key file failed")
     }else{
         Utils.shCmd("chmod 400 node.pem","Set ssh key file as read-only permission")
-        return fileName
+        return "${env.WORKSPACE}/${sshKey}"
     }
+}
+
+def delSshKey(String sshKey){
+    echo "Delete ssh key..."
+    Utils.shCmd("rm -rf ${sshKey}")
+    echo "Delete ssh key successfully."
 }
 
 

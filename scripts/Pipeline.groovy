@@ -17,6 +17,7 @@ import groovy.transform.Field
 @Field private ACCESS_TOKEN = null
 @Field private INTEGRATION_PLAN_NAME = ""
 @Field private INTEGRATION_PLAN = ""
+@Field private INTEGRATION_PLAN = ""
 
 echo "Loaded class Pipeline.groovy"
 
@@ -124,6 +125,7 @@ def postAlways() {
     } else {
         echo "No need to delete client for client id: ${CLIENT_ID}"
     }
+    Precheck.delSshKey()
 }
 
 def scopeFailed() {
