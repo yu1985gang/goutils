@@ -151,16 +151,19 @@ def pingNE(String address, String sshKey, String sshUerName, String remoteIp) {
     if (isIPv4Addr || isIPv4Dns){
         pingIPv4Res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
         echo "pingIPv4Res is $pingIPv4Res"
+        if(pingIPv4Res!=0){
+            error("Ping NE address ${address} timeout, please check")
+        }
     }
 
     if (isIPv6Addr || isIPv6Dns){
         intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
         pingIPv6Res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
         echo "pingIPv6Res is $pingIPv6Res"
+        if(pingIPv6Res!=0){
+            error("Ping NE address ${address} timeout, please check")
+        }
 
-    }
-    if (pingIPv4Res != 0 || pingIPv6Res != 0) {
-        error("Ping NE address ${address} timeout, please check")
     }
 }
 
