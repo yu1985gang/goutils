@@ -90,8 +90,9 @@ def validateHost(NE,NOM,CCTF) {
         echo "Use the ne host from configuration: NE_HOST=${neHost}"
     }
 
+    //Check Lab parameters are defined and not empty
     ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "CCTF_FQDN": CCTF.FQDN,"NOM_EDGE_NODE_HOST":NOM.NOM_EDGE_NODE_HOST, "NOM_SSH_USERNAME":NOM.NOM_SSH_USERNAME,"NOM_SSH_KEY_FILE":NOM.NOM_SSH_KEY_FILE].each{k,v->
-        if ( v == null | v.trim() == ""){
+        if ( v == null || v.trim() == ""){
             error("Invalid conf,${k}=${v}")
         }
     }
@@ -293,7 +294,7 @@ def getNeTypeReleaseFromPackageProperties(String packageLink) {
     return [neType, neRelease]
 }
 
-def CCTFHealth(CCTF) {
+def checkCCTF(CCTF) {
     def baseUrl = "https://${CCTF.FQDN}/cctf/api"
     def cctfHealthCheckApi = "curl -sk ${baseUrl}/system/healthCheck --connect-timeout 10 -m 30 --retry 3 --retry-delay 5"
     def healthCheckResult = Utils.shCmd(cctfHealthCheckApi, "Check CCTF status")

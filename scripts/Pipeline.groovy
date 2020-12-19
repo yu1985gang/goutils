@@ -44,7 +44,7 @@ def preCheck(NE_SW_ID, NE_MO_CLASS_ID, NE_DIST_NAME, NE_HOST, NE_PORT, NE_USER_N
     
     (INTEGRATION_PLAN_NAME, INTEGRATION_PLAN) = Precheck.validateAndGenPlan(NE, Precheck.createParamOptionalMap(CUSTOM_INTEGRATION_PARAMS), Conf, FP_PACKAGE_LINK, NE_CERTIFICATES)
     Precheck.validateHost(NE,NOM,CCTF)
-    Precheck.CCTFHealth(CCTF)
+    Precheck.checkCCTF(CCTF)
     
     NE_TC = ['NE_TC_PACKAGE_URL': NE_TC_PACKAGE_URL, 'NE_TC_DOCKER_IMAGE_URL': NE_TC_DOCKER_IMAGE_URL, 'NE_TC_PARAMETERS': NE_TC_PARAMETERS]
     echo 'Use the following parameters to SyVe:'
