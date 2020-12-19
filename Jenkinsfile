@@ -108,26 +108,7 @@ This image is used for running test cases.''',
     }
 
     post {
-        always {
-            script {
-                PIPELINE.postAlways()
-            }
-        }
-        failure {
-            script {
-                PIPELINE.scopeFailed()
-            }
-        }
-        success {
-            script {
-                PIPELINE.scopeSucceed()
-            }
-        }
-        aborted {
-            script {
-                PIPELINE.scopeAborted()
-            }
-        }
+
     }
 }
 

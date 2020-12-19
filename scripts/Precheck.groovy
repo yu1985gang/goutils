@@ -141,6 +141,7 @@ def pingNE(String address, String sshKey, String sshUerName, String remoteIp) {
     def isIPv6Addr = Utils.isIPv6(address)
     def isIPv4Dns = isDnsIPv4(address,sshKey,sshUerName,remoteIp)
     def isIPv6Dns = isDnsIPv6(address,sshKey,sshUerName,remoteIp)
+    echo "isIPv4Addr is $isIPv4Addr, isIPv6Addr is $isIPv6Addr, isIPv4Dns is $isIPv4Dns, isIPv6Dns is $isIPv6Dns"
     def pingIPv4Res,pingIPv6Res
 
     if (!isIPv4Addr && !isIPv6Addr && !isIPv4Dns && !isIPv6Dns){
@@ -149,11 +150,13 @@ def pingNE(String address, String sshKey, String sshUerName, String remoteIp) {
 
     if (isIPv4Addr || isIPv4Dns){
         pingIPv4Res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping -c3 ${address}", returnStatus: true, label: "Ping ipv4 address"
+        echo "pingIPv4Res is $pingIPv4Res"
     }
 
-    if (isIPv6Addr || isIPv6Dns ){
+    if (isIPv6Addr || isIPv6Dns){
         intf = Utils.shCmd("netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)", "")
         pingIPv6Res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping6 -I ${intf} -c3 ${address}", returnStatus: true, label: "Ping ipv6 address"
+        echo "pingIPv6Res is $pingIPv6Res"
 
     }
     if (pingIPv4Res != 0 || pingIPv6Res != 0) {
