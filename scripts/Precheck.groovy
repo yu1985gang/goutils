@@ -103,7 +103,7 @@ def validateHost(NE,NOM,CCTF) {
         echo "Ping ${v} successfully"
     }
 
-    //ping NE IP or DNS in NOM
+    //ping NE (IP or DNS) in NOM
     ["NE_HOST": neHost].each { k, v ->
         pingNE(v,genSshKeyFile("node.pem"),NOM.NOM_SSH_USERNAME,NOM.NOM_EDGE_NODE_HOST)
         echo "Ping ${k} successfully"
@@ -111,7 +111,7 @@ def validateHost(NE,NOM,CCTF) {
 }
 
 def pingAddress(String address) {
-    // execute ping in Jenkins server
+    // ping address in Jenkins server
     def res = sh script: "ping -c3 ${address}", returnStatus: true, label: "Ping address"
     if (res != 0) {
         error("ping address ${address} timeout, please check")
@@ -119,7 +119,7 @@ def pingAddress(String address) {
 }  
 
 def pingNE(String address, String sshKey, String sshUerName, String remoteIp) {
-    //log in NOM and ping NE
+    //ping NE address in NOM
     def isIPv4Addr = Utils.isIPv4(address)
     def isIPv6Addr = Utils.isIPv6(address)
     def isIPv4Dns = isDnsIPv4(address,sshKey,sshUerName,remoteIp)
