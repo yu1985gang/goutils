@@ -127,7 +127,7 @@ def pingNE(String address, String sshKey, String sshUerName, String remoteIp) {
     def pingIPv4Res,pingIPv6Res
 
     if (!isIPv4Addr && !isIPv6Addr && !isIPv4Dns && !isIPv6Dns){
-        error("NE_HOST is neigther IP nor DNS: ${address}")
+        error("NE_HOST:${address} is neigther IP nor DNS.")
     }
 
     if (isIPv4Addr || isIPv4Dns){
