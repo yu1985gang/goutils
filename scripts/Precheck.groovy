@@ -136,7 +136,7 @@ def pingNE(String addr,String sshKey, String sshUerName, String remoteIp) {
     }
 
     if (isIPv4IP || isIPv4DNS){
-        res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping -c3 ${addr}", returnStatus: true, label: "Ping ipv4 address"
+        res = sh script: "ssh -i ${SshKeyFile} ${sshUerName}@${remoteIp} ping -c3 ${addr}", returnStatus: true, label: "Ping ipv4 address"
         if(res!=0){
             error("Ping NE address ${addr} timeout, please check")
         }
