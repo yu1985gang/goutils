@@ -105,7 +105,7 @@ def validateHost(NE,NOM,CCTF) {
     }
 
     //ping NE (IP or DNS) in NOM
-    ["NE_HOST": neHost].each { k, v ->
+    ["NE_HOST": neHost].each {k, v ->
         pingNE(v,NOM.NOM_SSH_KEY,NOM.NOM_SSH_USERNAME,NOM.NOM_EDGE_NODE_HOST)
         echo "Ping ${k} successfully"
     }
@@ -162,7 +162,6 @@ def genSshKeyFile(String sshKey){
 
 def delSshKeyFile(){
     Utils.shCmd("rm -rf ${SshKeyFile}")
-    echo "Delete ssh key: ${SshKeyFile}"
 }
 
 def isIPv4DNS(String fqdn,String sshKeyFile, String sshUerName, String remoteIp){
