@@ -128,6 +128,7 @@ def pingNE(String addr,String sshKey, String sshUerName, String remoteIp) {
     def isIPv6IP = Utils.isIPv6(addr)
     def isIPv4DNS = isIPv4DNS(addr,SshKeyFile,sshUerName,remoteIp)
     def isIPv6DNS = isIPv6DNS(addr,SshKeyFile,sshUerName,remoteIp)
+    echo "isIPv4IP is $isIPv4IP,isIPv6IP is $isIPv6IP,isIPv4DNS is $isIPv4DNS,isIPv6DNS is $isIPv6DNS"
     //def pingIPv4Res,pingIPv6Res
 
     if (!isIPv4IP && !isIPv6IP && !isIPv4DNS && !isIPv6DNS){
@@ -142,8 +143,8 @@ def pingNE(String addr,String sshKey, String sshUerName, String remoteIp) {
     }
 
     if (isIPv6IP || isIPv6DNS){
-        rtIface = Utils.shCmd("ssh -i ${sshKey} ${sshUerName}@${remoteIp} netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)","")
-        res = sh script: "ssh -i ${sshKey} ${sshUerName}@${remoteIp} ping6 -I ${rtIface} -c3 ${addr}", returnStatus: true, label: "Ping ipv6 address"
+        rtIface = Utils.shCmd("ssh -i ${SshKeyFile} ${sshUerName}@${remoteIp} netstat -rn | grep '^0.0.0.0' | rev | cut -d ' '  -f1 | rev").trim().replaceAll("(\\r|\\n)","")
+        res = sh script: "ssh -i ${SshKeyFile} ${sshUerName}@${remoteIp} ping6 -I ${rtIface} -c3 ${addr}", returnStatus: true, label: "Ping ipv6 address"
         if(res!=0){
             error("Ping NE address ${addr} timeout, please check")
         }
@@ -159,7 +160,7 @@ def genSshKeyFile(String sshKey){
     }
 }
 
-def delSshKey(){
+def delSshKeyFile(){
     Utils.shCmd("rm -rf ${SshKeyFile}")
     echo "Delete ssh key: ${SshKeyFile}"
 }
