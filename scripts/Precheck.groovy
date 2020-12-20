@@ -91,7 +91,7 @@ def validateHost(NE,NOM,CCTF) {
         echo "Use the ne host from configuration: NE_HOST=${neHost}"
     }
 
-    //Check Lab parameters are defined and not empty
+    //Check if NOM parameters are defined and not empty
     ["NOM_BASE_DOMAIN": NOM.NOM_BASE_DOMAIN, "CCTF_FQDN": CCTF.FQDN,"NOM_EDGE_NODE_HOST":NOM.NOM_EDGE_NODE_HOST, "NOM_SSH_USERNAME":NOM.NOM_SSH_USERNAME,"NOM_SSH_KEY":NOM.NOM_SSH_KEY].each{k,v->
         if ( v == null || v.trim() == ""){
             error("Invalid conf,${k}=${v}")
