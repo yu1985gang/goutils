@@ -154,14 +154,14 @@ def pingNE(String addr,String sshKey, String sshUerName, String remoteIp) {
 def genSshKeyFile(String sshKey){
     writeFile file: SshKeyFile, text: sshKey
     if(fileExists(SshKeyFile)){
-        Utils.shCmd("chmod 400 ${SshKeyFile}","Set ssh key file with read-only permission")
+        Utils.shCmd("chmod 400 ${SshKeyFile}","Set ssh key file as read-only")
     }else{
         error("Generate ssh key file failed")
     }
 }
 
 def delSshKeyFile(){
-    Utils.shCmd("rm -rf ${SshKeyFile}")
+    Utils.shCmd("rm -rf ${SshKeyFile}","Delete ssh key file.")
 }
 
 def isIPv4DNS(String fqdn,String sshKeyFile, String sshUerName, String remoteIp){
