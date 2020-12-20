@@ -128,8 +128,6 @@ def pingNE(String addr,String sshKey, String sshUerName, String remoteIp) {
     def isIPv6IP = Utils.isIPv6(addr)
     def isIPv4DNS = isIPv4DNS(addr,SshKeyFile,sshUerName,remoteIp)
     def isIPv6DNS = isIPv6DNS(addr,SshKeyFile,sshUerName,remoteIp)
-    echo "isIPv4IP is $isIPv4IP,isIPv6IP is $isIPv6IP,isIPv4DNS is $isIPv4DNS,isIPv6DNS is $isIPv6DNS"
-    //def pingIPv4Res,pingIPv6Res
 
     if (!isIPv4IP && !isIPv6IP && !isIPv4DNS && !isIPv6DNS){
         error("NE_HOST:${addr} is neigther IP nor DNS.")
