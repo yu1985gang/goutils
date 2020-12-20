@@ -18,7 +18,6 @@ import groovy.transform.Field
 @Field private INTEGRATION_PLAN_NAME = ""
 @Field private INTEGRATION_PLAN = ""
 
-
 echo "Loaded class Pipeline.groovy"
 
 Download = load "${env.WORKSPACE}/scripts/DownloadFP.groovy"
