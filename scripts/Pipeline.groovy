@@ -119,6 +119,7 @@ def exeTestCase() {
 }
 
 def postAlways() {
+    Precheck.delSshKeyFile()
     Download.removeFp(FP_PACKAGE_NAME)
     if(CLIENT_ID) {
         Deploy.deleteClient(CLIENT_ID, NOM)
