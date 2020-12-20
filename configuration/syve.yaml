@@ -4,7 +4,7 @@ NOM:
     NOM_BASE_DOMAIN: neo0033.dyn.nesc.nokia.net
     NOM_REALM_NAME: NEO
     NOM_EDGE_NODE_HOST: 10.92.130.124
-    NOM_SSH_USERNAME:cloud-user
+    NOM_SSH_USERNAME: cloud-user
     NOM_SSH_KEY: |
      -----BEGIN RSA PRIVATE KEY-----
      MIIEogIBAAKCAQEAqVhv4O0sDIYsivEN5dNFObGu+0ytAfLb4TZjVJGDoEASufR6
