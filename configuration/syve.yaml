@@ -37,7 +37,7 @@ CCTF:
   FQDN: neo0033vip.netact.nsn-rdnet.net
   USER_NAME: admin
   PASSWORD: cctf@Pipe
-COMMON_TC_PACKAGE_URL: https://repo3.cci.nokia.net/artifactory/neo-generic-candidates/CCTF/neo-syve-0.0.8.tgz
+COMMON_TC_PACKAGE_URL: https://repo3.cci.nokia.net/artifactory/neo-generic-candidates/CCTF/neo-syve-0.0.10.tgz
 COMMON_TC_DOCKER_IMAGE: neo-docker-candidates.repo.lab.pl.alcatel-lucent.com/neo-syve:latest
 FP_FEEDBACK_COLLECTOR:
   FQDN: http://cidash.netact.nsn-rdnet.net/fastpass/job/Fast_Pass_Feedback_Collector

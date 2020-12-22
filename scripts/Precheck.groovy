@@ -163,18 +163,18 @@ def delSshKeyFile(){
 }
 
 def isIPv4DNS(String fqdn,String sshKeyFile, String sshUerName, String remoteIp){
-    def iPv4DNS = sh script:"ssh -i ${sshKeyFile} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'has address'",returnStatus:true
     if (Utils.isIPv4(fqdn) || Utils.isIPv6(fqdn)){
         return false
     }
+    def iPv4DNS = sh script:"ssh -i ${sshKeyFile} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'has address'",returnStatus:true
     return iPv4DNS == 0
 }
 
 def isIPv6DNS(String fqdn,String sshKeyFile, String sshUerName, String remoteIp){
-    def iPv6DNS = sh script: "ssh -i ${sshKeyFile} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'has IPv6 address'",returnStatus:true
     if (Utils.isIPv4(fqdn) || Utils.isIPv6(fqdn)){
         return false
     }
+    def iPv6DNS = sh script: "ssh -i ${sshKeyFile} ${sshUerName}@${remoteIp} host ${fqdn} |grep -i 'has IPv6 address'",returnStatus:true
     return iPv6DNS == 0
 }
 
